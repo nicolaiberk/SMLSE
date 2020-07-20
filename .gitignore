@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.ipynb_checkpoints
+SMLSE.Rproj
+DE/raw/Bundestag.csv
+DE/processed/Bundestag_cleaned.csv
+DE/.ipynb_checkpoints
+AT/raw/Nationalrat.csv
+AT/processed/Nataionalrat_cleaned.csv
+AT/.ipynb_checkpoints
+NL/raw/Tweede_Kamer.csv
+NL/processed/TweedeKamer_cleaned.csv
+NL/.ipynb_checkpoints
