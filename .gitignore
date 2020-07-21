@@ -7,9 +7,15 @@ SMLSE.Rproj
 DE/raw/Bundestag.csv
 DE/processed/Bundestag_cleaned.csv
 DE/.ipynb_checkpoints
+DE/vis
+DE/smlse
 AT/raw/Nationalrat.csv
 AT/processed/Nataionalrat_cleaned.csv
 AT/.ipynb_checkpoints
+AT/vis
+AT/smlse
 NL/raw/Tweede_Kamer.csv
 NL/processed/TweedeKamer_cleaned.csv
 NL/.ipynb_checkpoints
+NL/vis
+NL/smlse

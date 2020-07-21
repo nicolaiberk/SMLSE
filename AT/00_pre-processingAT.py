@@ -23,8 +23,8 @@ length=0
 # min_length=0
 print('Processing Austrian speeches...')
 
-with open(path+'raw/Nationalrat.csv', mode="r", encoding="cp1250") as fi:
-    with open(path+"processed/Nationalrat_cleaned.csv",mode="w", encoding="utf-8") as fo:                
+with open('raw/Nationalrat.csv', mode="r", encoding="cp1250") as fi:
+    with open("processed/Nationalrat_cleaned.csv",mode="w", encoding="utf-8") as fo:                
         reader = csv.reader(fi, delimiter=';')
         next(reader) # skips header
         fieldnames = ['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'raw', 'n_words']
@@ -61,5 +61,5 @@ with open(path+'raw/Nationalrat.csv', mode="r", encoding="cp1250") as fi:
                                  'n_words':      length
                                  })
                 i += 1
-print('Finished processing {} Austrian speeches, skipped {}'.format(i, skip))
+print(f'Finished processing {i} Austrian speeches')
 

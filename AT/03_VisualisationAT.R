@@ -8,12 +8,11 @@ library(Hmisc)
 library(ggridges)
 
 rm(list=ls())
-setwd('C:/Users/nicol/Dropbox/Studium/Amsterdam/Studies/Semester 4/Master Thesis/data/dataverse_files')
 
 options(stringsAsFactors = FALSE)
 
 rm(list = ls())
-at <- read.csv('AT_notext2020-06-03.csv', encoding = 'UTF-8')
+at <- read.csv('smlse/AT_notext.csv', encoding = 'UTF-8')
 
 at$date <- as.Date(at$date,format = '%Y-%m-%d')
 
@@ -49,7 +48,6 @@ fpvp <- at_pt_my %>%
   ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
   annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
   annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
-  # geom_vline(xintercept = as.Date('2002-11-24'), color = 'red') +
   geom_line() +
   geom_ribbon(alpha=0.2) +
   scale_color_manual(values=c('blue', 'black')) +

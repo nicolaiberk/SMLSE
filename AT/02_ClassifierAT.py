@@ -14,12 +14,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from imblearn.over_sampling import SMOTE    
 from sklearn.linear_model import LogisticRegression
 
-df = pd.read_csv('/dataverse_files/processed/Nationalrat.csv')
+df = pd.read_csv('processed/Nationalrat_cleaned.csv')
 df.party=df.party.fillna('')
 # drop 'Schriftfuehrer'
 df = df[df.party != '']
-
-now = str(dt.now().strftime("%Y%m%d-%H%M"))
 
 ## define party families beyond RR
 df.loc[:,'family'] = ''
@@ -150,15 +148,14 @@ for s in np.unique(df.session):
 #%% write into csv
 
 df_r = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'BZÖ_pred', 'FPÖ_pred', 'RR_pred', 'n_words']]
-df_r.to_csv(basedir+'/dataverse_files/AT_notext'+now+'.csv')
+df_r.to_csv('smlse/AT_notext.csv')
 
 # with text
 df = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'BZÖ_pred', 'FPÖ_pred', 'RR_pred', 'raw', 'n_words']]
-df.to_csv(basedir+'/dataverse_files/AT_text'+now+'.csv')
+df.to_csv('smlse/AT_text.csv')
 
 #%% assess best predictor words for last session
-
 import eli5
 htmlobj=eli5.show_weights(logreg, top = 30, vec = vecs['RR'][16])
-with open(basedir+'/dataverse_files/vis/eli5_weights_at_clf.htm','wb') as f:   # Use some reasonable temp name
+with open('vis/eli5_weights_at_clf.htm','wb') as f:   # Use some reasonable temp name
     f.write(htmlobj.data.encode("UTF-8"))
