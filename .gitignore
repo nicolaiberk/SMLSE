@@ -10,11 +10,11 @@ DE/.ipynb_checkpoints
 DE/vis
 DE/smlse
 AT/raw/Nationalrat.csv
-AT/processed/Nataionalrat_cleaned.csv
+AT/processed/Nationalrat_cleaned.csv
 AT/.ipynb_checkpoints
 AT/vis
 AT/smlse
-NL/raw/Tweede_Kamer.csv
+NL/raw/TweedeKamer.csv
 NL/processed/TweedeKamer_cleaned.csv
 NL/.ipynb_checkpoints
 NL/vis
