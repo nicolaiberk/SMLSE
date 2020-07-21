@@ -15,11 +15,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.linear_model import LogisticRegression
 
 
-dt = str(datetime.datetime.now().strftime("%Y%m%d-%H%M"))
-
-
-basedir = os.path.expanduser('~/Dropbox/Studium/Amsterdam/Studies/Semester 4/Master Thesis/data')
-df = pd.read_csv(basedir+'/dataverse_files/processed/Bundestag_cleaned.csv')
+df = pd.read_csv('processed/Bundestag_cleaned.csv')
 
 df.party = df.party.fillna('')
 df = df[df.party != ''] # drop non-partisan/non parliamentary members' speeches
@@ -32,7 +28,7 @@ df = df[df['date_tr'] > pd.to_datetime('2017-10-24', format='%Y-%m-%d')] # subse
 #%% train on full set
             
 # fit
-vec_final = TfidfVectorizer(max_df=.5, min_df=5, lowercase=False, ngram_range=(1,1)) # exclude 5 (was 200) least-used terms, similar to Petersen & Spirling (used 5 in crossval bc restricted feature set)
+vec_final = TfidfVectorizer(max_df=.5, min_df=5, lowercase=False, ngram_range=(1,1)) 
 dtm = vec_final.fit_transform([t for t in df['raw']])
 logreg = LogisticRegression(max_iter = 1000)
 
@@ -62,11 +58,11 @@ df['afd_pred'] = l_pred
 # inspect classifier using eli5
 import eli5
 htmlobj=eli5.show_weights(logreg, top = 30, vec = vec_final)
-with open(basedir+'/dataverse_files/vis/eli5_weights_de_clf.htm','wb') as f:   # Use some reasonable temp name
+with open('vis/eli5_weights_de_clf.htm','wb') as f: 
     f.write(htmlobj.data.encode("UTF-8"))
 
 htmlobj=eli5.show_prediction(logreg, df[df['speaker']=='Alexander Gauland']['raw'].iloc[2], vec = vec_final)
-with open(basedir+'/dataverse_files/vis/eli5_example_de_gauland.htm','wb') as f:   # Use some reasonable temp name
+with open('vis/eli5_example_de_gauland.htm','wb') as f: 
     f.write(htmlobj.data.encode("UTF-8"))
 
 
@@ -89,11 +85,11 @@ df['afd_ind'] = (df.party.isin(['AfD', 'independent']))
 
 # no text
 df_r = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'afd', 'afd_ind', 'afd_pred', 'afd_ind_pred', 'n_words_raw']]
-df_r.to_csv(basedir+'/dataverse_files/DE_notext_'+dt+'.csv')
+df_r.to_csv('smlse/DE_notext.csv')
 
 # with text
 df = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'afd', 'afd_ind', 'afd_pred', 'afd_ind_pred', 'n_words_raw', 'raw']]
-df.to_csv(basedir+'/dataverse_files/DE_text_'+dt+'.csv')
+df.to_csv('smlse/DE_text.csv')
 
 
 #%% train classifiers per party, export best predictor words for each party
@@ -108,5 +104,5 @@ for pt in ['AfD', 'CDU/CSU', 'FDP', 'GRUENE', 'PDS/LINKE', 'SPD']:
     
     # export estimation of best predictor words:
     htmlobj=eli5.show_weights(clfs[pt], top = 30, vec = vecs[pt])
-    with open(basedir+'/dataverse_files/vis/eli5_weights_de_'+pt[0:3]+'.htm','wb') as f:   # Use some reasonable temp name
+    with open(basedir+'vis/eli5_weights_de_'+pt[0:3]+'.htm','wb') as f: 
         f.write(htmlobj.data.encode("UTF-8"))

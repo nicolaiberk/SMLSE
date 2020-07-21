@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 import os
 import datetime
 
-df = pd.read_csv('/dataverse_files/processed/Bundestag_cleaned.csv')
+df = pd.read_csv('processed/Bundestag_cleaned.csv')
 
 df.party=df.party.fillna('')
-df=df[df.party!=''] # drop non-partisan/non parliamentary members' speeches
+df=df[df.party!=''] # drop non-parliamentary members' speeches
 
 # subset
 df['date_tr'] = pd.to_datetime(df.date, format='%Y-%m-%d')
@@ -137,4 +137,4 @@ for m in models:
 # similar performance across models, but best performance of LogReg, raw text, tfidf vectorizer 
 #   (accuracy: 0.89, precision: 0.62, recall: 0.59, F1: 0.61)
                 
-# might add a plot for appendix showing performance of each classifier
+# might add a plot/table for appendix showing performance of each classifier
