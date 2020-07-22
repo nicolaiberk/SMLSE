@@ -13,6 +13,7 @@ import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
 from imblearn.over_sampling import SMOTE
 from sklearn.linear_model import LogisticRegression
+import time
 
 
 df = pd.read_csv('processed/Bundestag_cleaned.csv')
@@ -32,6 +33,9 @@ vec_final = TfidfVectorizer(max_df=.5, min_df=5, lowercase=False, ngram_range=(1
 dtm = vec_final.fit_transform([t for t in df['raw']])
 logreg = LogisticRegression(max_iter = 1000)
 
+
+start_time = time.time() # time execution for comparison with wordfish
+
 sm = SMOTE(random_state=42, 
              sampling_strategy={'AfD':len(df[df['party']=='CDU/CSU'])*5,
                                 'SPD':len(df[df['party']=='CDU/CSU']),
@@ -43,6 +47,17 @@ X_final, y_res_pt = sm.fit_resample(dtm, df['party'])
 y_res=[t=='AfD' for t in y_res_pt]
 logreg.fit(X_final, y_res)
 
+end_time = time.time()
+diff = f"{(end_time - start_time)} seconds"
+
+# transform into meaningful time
+start_time = time.strftime('%h-%m-%s', time.localtime(start_time))
+end_time = time.strftime('%h-%m-%s', time.localtime(end_time))
+
+# write runtime
+text_file = open("runtime_smlse.txt", "w")
+text_file.write(f'Start time: {start_time},\n end time {end_time},\n difference: {diff}')
+text_file.close()
 
 # predict
 pred = logreg.predict_proba(dtm)
@@ -90,19 +105,3 @@ df_r.to_csv('smlse/DE_notext.csv')
 # with text
 df = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'afd', 'afd_ind', 'afd_pred', 'afd_ind_pred', 'n_words_raw', 'raw']]
 df.to_csv('smlse/DE_text.csv')
-
-
-#%% train classifiers per party, export best predictor words for each party
-from sklearn.linear_model import LinearRegression
-clfs={k: LinearRegression() for k in ['AfD', 'CDU/CSU', 'FDP', 'GRUENE', 'PDS/LINKE', 'SPD']}
-vecs={k: TfidfVectorizer(max_df=.5, min_df=5, lowercase=False) for k in ['AfD', 'CDU/CSU', 'FDP', 'GRUENE', 'PDS/LINKE', 'SPD']}
-
-for pt in ['AfD', 'CDU/CSU', 'FDP', 'GRUENE', 'PDS/LINKE', 'SPD']:
-    y = df['afd_pred'][df['party']==pt]
-    X = vecs[pt].fit_transform(df['raw'][df['party']==pt])
-    clfs[pt].fit(X,y)
-    
-    # export estimation of best predictor words:
-    htmlobj=eli5.show_weights(clfs[pt], top = 30, vec = vecs[pt])
-    with open(basedir+'vis/eli5_weights_de_'+pt[0:3]+'.htm','wb') as f: 
-        f.write(htmlobj.data.encode("UTF-8"))
