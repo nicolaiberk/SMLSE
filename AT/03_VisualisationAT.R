@@ -7,24 +7,18 @@ library(boot)
 library(Hmisc)
 library(ggridges)
 
-rm(list=ls())
-
 options(stringsAsFactors = FALSE)
 
-rm(list = ls())
 at <- read.csv('smlse/AT_notext.csv', encoding = 'UTF-8')
 
 at$date <- as.Date(at$date,format = '%Y-%m-%d')
 
-
-## vis #####
 colnames(at)[10] <- 'bzoe'
 colnames(at)[11] <- 'fpoe'
 colnames(at)[12] <- 'bzoe_pred'
 colnames(at)[13] <- 'fpoe_pred'
 
 
-# missing party ID for about 10% of the data!
 at <- at[!at$party %in% c('', 'independent'),]
 partycols=c("lightblue", "blue", "green", 'yellow', 'magenta', 'black', 'red')
 
@@ -41,8 +35,9 @@ at_pt_my <- at %>%
 at_pt_my$se <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
 at_pt_my$ci_low <- at_pt_my$mean_rr - 1.96*at_pt_my$se
 at_pt_my$ci_up <- at_pt_my$mean_rr + 1.96*at_pt_my$se
-# plot
 
+
+# plot
 fpvp <- at_pt_my %>% 
   filter(party %in% c('FPÖ', 'ÖVP')) %>% 
   ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
@@ -53,72 +48,11 @@ fpvp <- at_pt_my %>%
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
   ylab('SMLSE')
-ggsave('vis/AT_pt_my_fpvp.png', fpvp) 
 
-ggsave('vis/AT_poster.png', fpvp, height = 4, width = 20)
-ggsave('vis/AT_presi.png', fpvp, height = 6, width = 10)
-ggsave('vis/AT_paper.png', fpvp, height = 4, width = 10)
+ggsave('vis/AT_fpvp_poster.png', fpvp, height = 4, width = 20)
+ggsave('vis/AT_fpvp_presi.png', fpvp, height = 6, width = 10)
+ggsave('vis/AT_fpvp_paper.png', fpvp, height = 4, width = 10)
 
-
-## kurz
-at_kurz <- at_pt_my %>% 
-  filter(party %in% c('FPÖ', 'ÖVP')) %>% 
-  filter(my > as.Date(x = '01.01.2017', format = '%d.%m.%Y'))
-
-
-# plot
-kurz <-ggplot(at_kurz, aes(x=my, y=mean_rr, group=party, color=party, fill=party, ymin=ci_low, ymax=ci_up))+ 
-  geom_vline(xintercept=as.Date('1.7.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) + 
-  geom_vline(xintercept=as.Date('15.10.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) +
-  geom_vline(xintercept=as.Date('18.12.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) +
-  geom_text(aes(x=as.Date('1.7.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=40, label='Kurz Party Leader', show.legend = F)+
-  geom_text(aes(x=as.Date('15.10.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=20, label='Election', show.legend = F)+
-  geom_text(aes(x=as.Date('18.12.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=50, label='Government formation', show.legend = F)+
-  geom_point(data=at[at$party %in% c('FPÖ', 'ÖVP'),], aes(x=date, y=RR_pred, col=party), alpha=0.2, inherit.aes = F)+
-  geom_line()+
-  geom_ribbon(alpha=0.1) +
-  scale_color_manual(values=c('blue', 'black')) +
-  scale_fill_manual(values=c('blue', 'black')) +
-  theme_minimal() +
-  scale_x_date(limits = c(min(at_kurz$my), max(at_kurz$my)))+
-  scale_y_continuous(limits=c(0,1.1))+
-  ylab('SMLSE')
-ggsave('vis/kurz.png', kurz) 
-
-# alternative: aggregate by date
-at_kurz <- at %>% 
-  filter(party %in% c('FPÖ', 'ÖVP')) %>% 
-  filter(my > as.Date(x = '01.01.2017', format = '%d.%m.%Y')) %>% 
-  group_by(party, date) %>% 
-  summarise(mean_rr = mean(x=RR_pred, w=n_words),
-            sd_rr = sqrt(wtd.var(x=RR_pred, w=n_words)),
-            n_speeches = length(RR_pred))
-at_kurz$se <- at_kurz$sd_rr/sqrt(at_kurz$n_speeches)
-at_kurz$ci_low <- at_kurz$mean_rr - 1.96*at_kurz$se
-at_kurz$ci_up <- at_kurz$mean_rr + 1.96*at_kurz$se
-
-# plot
-kurz_alt <-ggplot(at_kurz, aes(x=date, y=mean_rr, group=party, color=party, fill=party, ymin=ci_low, ymax=ci_up))+ 
-  geom_vline(xintercept=as.Date('1.7.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) + 
-  geom_vline(xintercept=as.Date('15.10.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) +
-  geom_vline(xintercept=as.Date('18.12.2017', format = '%d.%m.%Y'), colour="red", linetype = "longdash", size=1) +
-  geom_text(aes(x=as.Date('1.7.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=40, label='Kurz Party Leader', show.legend = F)+
-  geom_text(aes(x=as.Date('15.10.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=20, label='Election', show.legend = F)+
-  geom_text(aes(x=as.Date('18.12.2017', format = '%d.%m.%Y'), y=1.1), nudge_x=50, label='Government formation', show.legend = F)+
-  geom_point(data=at[at$party %in% c('FPÖ', 'ÖVP'),], aes(x=date, y=RR_pred, col=party), alpha=0.5, inherit.aes = F)+
-  geom_line()+
-  geom_ribbon(alpha=0.1) +
-  scale_color_manual(values=c('blue', 'black')) +
-  scale_fill_manual(values=c('blue', 'black')) +
-  theme_minimal() +
-  scale_x_date(limits = c(min(at_kurz$date), max(at_kurz$date)))+
-  scale_y_continuous(limits=c(0,1.1))+
-  ylab('SMLSE')
-
-ggsave('vis/kurz_alt.png', kurz_alt) 
-
-kurz_full <- gridExtra::grid.arrange(fpvp, kurz)
-ggsave('vis/kurz_full.png', kurz_full)
 
 ## aggregate per party
 at_pt <- at %>% 
@@ -136,7 +70,7 @@ party_plot <- ggplot(at_pt, aes(x=mean_rr, y=party, xmin = ci_low, xmax = ci_up,
   geom_linerange(size = 1, show.legend = F) +
   scale_color_manual(values=partycols)+
   xlab('SMLSE')
-ggsave('vis/AT_parties.png', party_plot, width = 6, height=3)
+ggsave('vis/AT_parties_mean.png', party_plot, width = 6, height=3)
 
 
 # plot density of party communication
@@ -147,34 +81,4 @@ party_dens_plot <- ggplot(at, aes(x=RR_pred, y=party, fill = party)) +
   scale_fill_manual(values=partycols)+
   xlab('SMLSE')
 ggsave('vis/AT_parties_density.png', party_dens_plot, width = 6, height=3)
-
-
-
-
-## aggregate per speaker & MY for last period, track kurz
-at_sp <- at %>% 
-  filter(party %in% c('ÖVP')) %>% 
-  filter(my > as.Date(x = '01.01.2017', format = '%d.%m.%Y')) %>% 
-  group_by(speaker, my) %>% 
-  summarise(mean_rr = wtd.mean(x=RR_pred, w=n_words),
-            sd_rr = sqrt(wtd.var(x=RR_pred, weights = n_words)),
-            n_speeches = length(RR_pred))
-at_sp$se <- at_sp$sd_rr/sqrt(at_sp$n_speeches)
-at_sp$ci_low <- at_sp$mean_rr - 1.96*at_sp$se
-at_sp$ci_up <- at_sp$mean_rr + 1.96*at_sp$se
-
-
-at_sp$col <- 'gray'
-at_sp$col[at_sp$speaker=="Sebastian Kurz" | at_sp$speaker=='Bundeskanzler Sebastian Kurz'| at_sp$speaker == "Bundesminister für Europa, Integration und Äußeres Sebastian Kurz" ] <- 'black'
-
-ggplot(at_sp, aes(x=my, y=mean_rr, group = speaker)) +
-  geom_line(show.legend = F, col = 'gray', alpha = 0.5) +
-  geom_line(inherit.aes = F, 
-            data = at_sp[at_sp$speaker=='Sebastian Kurz' | at_sp$speaker=='Bundeskanzler Sebastian Kurz' | at_sp$speaker == "Bundesminister für Europa, Integration und Äußeres Sebastian Kurz" ,], 
-            aes(x=my, y=mean_rr, group = speaker), col = 'black', size = 2) +
-  geom_ribbon(inherit.aes = F, 
-              data = at_sp[at_sp$speaker=='Sebastian Kurz' | at_sp$speaker=='Bundeskanzler Sebastian Kurz' | at_sp$speaker == "Bundesminister für Europa, Integration und Äußeres Sebastian Kurz" ,], 
-              aes(x=my, ymin = ci_low, ymax = ci_up, group = speaker), col = 'black', alpha = 0.5)+
-  ylab('SMLSE')
-
 
