@@ -81,7 +81,6 @@ for s in range(5):
         for text in ['raw', 'stems']:
             y[s] = df['party'][df['sample']!=s]
             X[text][vec][s], y_res_pt[s] = sm.fit_resample(dtms['train'][vec][text][s], y[s])
-            plt.hist(y_res_pt[s])
 
 
 #%% train classifiers
@@ -113,6 +112,15 @@ for parties in [["AfD"], ["AfD", "independent"]]:
     for s in range(5):
         y_res[str(parties)][s]=[(t in parties) for t in y_res_pt[s]]
 
+        
+perf_table = {"Classifier":[],
+              "Outcome":[],
+              "Vectorizer":[],
+              "Stemmed":[],
+              "Accuracy":[],
+              "Precision":[],
+              "Recall":[]}
+        
 for m in models:
     for parties in [["AfD"], ["AfD", "independent"]]:
         for vec in ['tfidf', 'count']:
@@ -133,8 +141,12 @@ for m in models:
                       '\nAverage precision: ' + str(np.mean(precis)) +
                       '\nAverage recall: ' + str(np.mean(recall)) +
                       '\nAverage f1-score: ' + str(np.mean(f1)) + '\n\n\n')
+                perf_table['Classifier'].append(str(m))
+                perf_table['Outcome'].append(' '.join(str(p) for p in parties))
+                perf_table['Vectorizer'].append(vec)
+                perf_table['Stemmed'].append(text)
+                perf_table['Accuracy'].append(np.mean(acc).round(2))
+                perf_table['Precision'].append(np.mean(precis).round(2))
+                perf_table['Recall'].append(np.mean(recall).round(2))
 
-# similar performance across models, but best performance of LogReg, raw text, tfidf vectorizer 
-#   (accuracy: 0.89, precision: 0.62, recall: 0.59, F1: 0.61)
-                
-# might add a plot/table for appendix showing performance of each classifier
+pd.DataFrame(perf_table).to_csv('smlse/ClassifierPerformance.csv')
