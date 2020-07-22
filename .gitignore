@@ -9,6 +9,8 @@ DE/processed/Bundestag_cleaned.csv
 DE/.ipynb_checkpoints
 DE/vis
 DE/smlse
+DE/wordfish
+DE/runtime*
 AT/raw/Nationalrat.csv
 AT/processed/Nationalrat_cleaned.csv
 AT/.ipynb_checkpoints
