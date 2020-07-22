@@ -9,7 +9,7 @@ library(ggridges)
 options(stringsAsFactors = FALSE)
 
 # Import ####
-de <- read.csv('DE_notext_20200526.csv', fileEncoding = 'UTF-8')
+de <- read.csv('smlse/DE_notext.csv', fileEncoding = 'UTF-8')
 de$date <- as.Date(de$date)
 
 ## vis #####
@@ -84,7 +84,7 @@ party_plot <- ggplot(de_pt, aes(x=mean_w, y=party, xmin = ci_low, xmax = ci_up, 
   scale_color_manual(values=partycols) +
   scale_y_discrete(limits=rev(c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent")))+
   xlab('SMLSE')
-ggsave('vis/DE_parties.png', party_plot, width = 6, height=3)
+ggsave('vis/DE_parties_mean.png', party_plot, width = 6, height=3)
 
 
 # plot distribution per party
@@ -95,143 +95,4 @@ party_dens_plot <- ggplot(de, aes(x=afd_pred, y=party, fill = party)) +
   scale_fill_manual(values=partycols)+
   xlab('SMLSE')
 ggsave('vis/DE_parties_density.png', party_dens_plot, width = 6, height=3)
-
-
-
-
-
-
-## aggregate per month and party
-de$my <- floor_date(de$date, "month")
-
-de_pt_my <- de %>% 
-  group_by(party, my) %>% 
-  summarise(mean_w = weighted.mean(x=afd_pred, w=n_words_raw),
-            sd_w = sqrt(wtd.var(x=afd_pred, weights=n_words_raw, normwt = T)),
-            n_speeches = length(afd_pred))
-de_pt_my$se <- de_pt_my$sd_w/sqrt(de_pt_my$n_speeches)
-de_pt_my$ci_low <- de_pt_my$mean_w - 1.96*de_pt_my$se
-de_pt_my$ci_up <- de_pt_my$mean_w + 1.96*de_pt_my$se
-
-# plot
-
-de_pt_my %>% 
-  filter(party != 'independent') %>% 
-  ggplot(aes(x = my, y = mean_w, col=party, fill=party, ymin = ci_low, ymax = ci_up)) + 
-  geom_line() +
-  geom_ribbon(alpha=0.2) +
-  scale_color_manual(values=partycols) +
-  scale_fill_manual(values=partycols)+
-  ylab('SMLSE')
-
-
-
-
-## show most and least polarised debates
-
-# excluude independents
-de_noind <- de %>% 
-  filter(party != 'independent')
-  
-
-# aggregate party X debate
-de_pt_ag <- de_noind %>% 
-  group_by(party, agenda) %>%
-  summarise(mean_w = weighted.mean(x=afd_pred, w=n_words_raw),
-            sd_w = sqrt(wtd.var(x=afd_pred, weights=n_words_raw, normwt = T)),
-            n_speeches = length(afd_pred))
-de_pt_ag$se <- de_pt_ag$sd_w/sqrt(de_pt_ag$n_speeches)
-de_pt_ag$ci_low <- de_pt_ag$mean_w - 1.96*de_pt_ag$se
-de_pt_ag$ci_up <- de_pt_ag$mean_w + 1.96*de_pt_ag$se
-
-
-# get agendas where all 6 parties gave at least 2 speeches
-full_pt_agendas <- de_pt_ag %>% 
-  filter(n_speeches > 3) %>%
-  group_by(agenda) %>% 
-  summarise(n_pt = length(mean_w)) %>% 
-  filter(n_pt == 6) %>% 
-  select(agenda)
-
-
-# subset to agendas identified
-de_pt_ag_r <- de_pt_ag %>% 
-  filter(agenda %in% full_pt_agendas$agenda)
-
-# aggregate and sort by afd/not afd distance, identify most and least polarised issues
-de_pt_ag_r$afd <- de_pt_ag_r$party == 'AfD'
-
-least <- de_pt_ag_r %>% 
-  group_by(afd, agenda) %>% 
-  summarise(mean = wtd.mean(mean_w, weights = n_speeches)) %>% 
-  group_by(agenda) %>% 
-  summarise(dist = max(mean)-min(mean)) %>% 
-  arrange(dist) %>% 
-  head()
-
-most <- de_pt_ag_r %>% 
-  group_by(afd, agenda) %>% 
-  summarise(mean = wtd.mean(mean_w, weights = n_speeches)) %>% 
-  group_by(agenda) %>% 
-  summarise(dist = max(mean)-min(mean)) %>% 
-  arrange(-dist) %>% 
-  head()
-
-
-
-# plot
-# plot each debate
-for  (ag in (1:length(least$agenda))){
-    plot <-
-      ggplot(de_noind[de$agenda==least$agenda[ag],], aes(x = afd_pred, y = party, fill = party, color = party))+
-      geom_density_ridges(alpha=0.2, show.legend = F)+
-      geom_point(data=de_pt_ag[de_pt_ag$agenda==least$agenda[ag],], aes(x = mean_w, y=party), show.legend = F, inherit.aes = F)+
-      geom_linerange(data=de_pt_ag[de_pt_ag$agenda==least$agenda[ag],], aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
-      scale_fill_manual(values=partycols)+
-      scale_color_manual(values=partycols)+
-      ggtitle(label = ag, subtitle = least$agenda[ag])
-    ggsave(paste0('vis/debates/de_least_', ag, '.png'), plot)
-}
-
-
-for  (ag in (1:length(most$agenda))){
-  plot <-
-    ggplot(de_noind[de$agenda==most$agenda[ag],], aes(x = afd_pred, y = party, fill = party, color = party))+
-    geom_density_ridges(alpha=0.2, show.legend = F)+
-    geom_point(data=de_pt_ag[de_pt_ag$agenda==most$agenda[ag],], aes(x = mean_w, y=party), show.legend = F, inherit.aes = F)+
-    geom_linerange(data=de_pt_ag[de_pt_ag$agenda==most$agenda[ag],], aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
-    scale_fill_manual(values=partycols)+
-    scale_color_manual(values=partycols)+
-    ggtitle(label = ag, subtitle = most$agenda[ag])
-  ggsave(paste0('vis/debates/de_most_', ag, '.png'), plot)
-}
-
-
-# selected issues
-plot <-
-  ggplot(de_noind[de$agenda==most$agenda[6],], aes(x = afd_pred, y = party, fill = party, color = party))+
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=de_pt_ag[de_pt_ag$agenda==most$agenda[6],], aes(x = mean_w, y=party), show.legend = F, inherit.aes = F)+
-  geom_linerange(data=de_pt_ag[de_pt_ag$agenda==most$agenda[6],], aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  scale_color_manual(values=partycols)+
-  ggtitle(label = 'First debate on the budget proposal', subtitle = '15/05/2008')+
-  xlab('SMLSE')+
-  ylab('')+
-  scale_x_continuous(limits=c(0,1))
-ggsave(paste0('vis/debates/de_most_selected.png'), plot)
-
-plot <-
-  ggplot(de_noind[de$agenda==least$agenda[1],], aes(x = afd_pred, y = party, fill = party, color = party))+
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=de_pt_ag[de_pt_ag$agenda==least$agenda[1],], aes(x = mean_w, y=party), show.legend = F, inherit.aes = F)+
-  geom_linerange(data=de_pt_ag[de_pt_ag$agenda==least$agenda[1],], aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  scale_color_manual(values=partycols)+
-  ggtitle(label = 'Debate on organ donations', subtitle = '28/11/2008')+
-  xlab('SMLSE')+
-  ylab('')+
-  scale_x_continuous(limits=c(0,1))
-ggsave(paste0('vis/debates/de_least_selected.png'), plot)
-
 
