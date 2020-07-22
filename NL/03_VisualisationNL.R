@@ -7,13 +7,9 @@ library(boot)
 library(Hmisc)
 library(ggridges)
 
-rm(list=ls())
-setwd('C:/Users/nicol/Dropbox/Studium/Amsterdam/Studies/Semester 4/Master Thesis/data/dataverse_files')
-
 options(stringsAsFactors = FALSE)
 
-rm(list = ls())
-nl <- read.csv('NL_notext20200627.csv', encoding = 'UTF-8')
+nl <- read.csv('smlse/NL_notext.csv', encoding = 'UTF-8')
 
 nl$date <- as.Date(nl$date,format = '%Y-%m-%d')
 
@@ -52,7 +48,7 @@ nl_fam_my <- nl_pt %>%
   xlab(label = '')+
   ylab('SMLSE')
 
-ggsave('vis/nl_fam_my.png', nl_fam_my)
+ggsave('vis/nl_families_monthly.png', nl_fam_my)
 
 
 #### aggregate by party per month ####
@@ -87,10 +83,9 @@ nl_vvd_my <- nl_pt %>%
   xlab(label = '')+
   ylab('SMLSE')
 
-ggsave('vis/nl_vvd_my.png', nl_vvd_my)
-ggsave('vis/nl_poster.png', nl_vvd_my, height = 4, width = 20)
-ggsave('vis/nl_presi.png', nl_vvd_my, height = 6, width = 10)
-ggsave('vis/nl_paper.png', nl_vvd_my, height = 4, width = 10)
+ggsave('vis/nl_vvd_rr_poster.png', nl_vvd_my, height = 4, width = 20)
+ggsave('vis/nl_vvd_rr_presi.png', nl_vvd_my, height = 6, width = 10)
+ggsave('vis/nl_vvd_rr_paper.png', nl_vvd_my, height = 4, width = 10)
 
 
 # including CDA
@@ -108,7 +103,7 @@ nl_full_my <- nl_pt %>%
   scale_color_manual(values=partycols)+
   xlab(label = '')+
   ylab('SMLSE')
-ggsave('vis/nl_full.png', nl_full_my, height = 4, width = 10)
+ggsave('vis/nl_vvd_cda_rr.png', nl_full_my, height = 4, width = 10)
 
 
 
@@ -129,7 +124,7 @@ party_plot <- ggplot(nl_pt, aes(x=mean_w, y=family, xmin = ci_low, xmax = ci_up,
   geom_linerange(size = 1, show.legend = F) +
   scale_color_manual(values=partycols)+
   xlab('SMLSE')
-ggsave('vis/nl_parties.png', party_plot, width = 6, height=3)
+ggsave('vis/nl_parties_point.png', party_plot, width = 6, height=3)
 
 
 # plot density per family
