@@ -47,7 +47,8 @@ fpvp <- at_pt_my %>%
   geom_ribbon(alpha=0.2) +
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
-  ylab('SMLSE')
+  ylab('SMLSE') +
+  ggtitle('Austria')
 
 ggsave('vis/AT_fpvp_poster.png', fpvp, height = 4, width = 20)
 ggsave('vis/AT_fpvp_presi.png', fpvp, height = 6, width = 10)

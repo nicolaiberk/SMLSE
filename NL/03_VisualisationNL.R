@@ -81,7 +81,8 @@ nl_vvd_my <- nl_pt %>%
   scale_fill_manual(values=partycols)+
   scale_color_manual(values=partycols)+
   xlab(label = '')+
-  ylab('SMLSE')
+  ylab('SMLSE')+
+  ggtitle('The Netherlands')
 
 ggsave('vis/nl_vvd_rr_poster.png', nl_vvd_my, height = 4, width = 20)
 ggsave('vis/nl_vvd_rr_presi.png', nl_vvd_my, height = 6, width = 10)
