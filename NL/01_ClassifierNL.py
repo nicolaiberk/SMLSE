@@ -15,11 +15,12 @@ from imblearn.over_sampling import SMOTE
 from sklearn.linear_model import LogisticRegression
 import sklearn.metrics
 import math
+import re
 
 df = pd.read_csv('processed/TweedeKamer_cleaned.csv')
 df.party=df.party.fillna('')
 
-## define party families beyond RR
+## define party families
 df.loc[:,'family'] = ''
 df.loc[df.party.isin(['FvD','LPF','PVV']),'family'] = 'RR'
 df.loc[df.party.isin(['VVD','D66']),'family'] = 'Liberal'
@@ -88,8 +89,6 @@ for pt in radright:
 
 
 #%% general RR classifier
-
-#df = df.loc[df.family!='',:] #drop unclassified parties
 dtms['RR']={s:'' for s in np.unique(df.session)}
 vecs['RR']={s:'' for s in np.unique(df.session)}
 
@@ -100,7 +99,7 @@ for s in np.unique(df.session):
         if len(np.unique(df.loc[df['session']==s,'RR']))==1:
             print('No RR speeches in session #'+str(s)+', skipping.')
             continue
-        vecs['RR'][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False) # exclude 5 least used words (was 200, similar to Petersen & Spirling)
+        vecs['RR'][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False)
         dtms['RR'][s]=vecs['RR'][s].fit_transform([t for t in df.loc[df['session']==s,'raw']])
         
         # choose largest subset for oversampling
@@ -112,8 +111,7 @@ for s in np.unique(df.session):
         # equal samples of each party within a party family
         strat={p:sp_max for p in np.unique(df.family[(df.session==s)])}
         strat['RR']=sp_max*(len(sp_list)-1)
-        sm = SMOTE(random_state=42,
-             sampling_strategy=strat)
+        sm = SMOTE(random_state=42, sampling_strategy=strat)
       
         X_final, y_res_pt = sm.fit_resample(dtms['RR'][s], df.loc[df['session']==s, 'family'])
         y=[t=='RR' for t in y_res_pt]
@@ -121,15 +119,17 @@ for s in np.unique(df.session):
         logreg.fit(X_final, y)
         df.loc[df['session']==s, 'RR_pred']=[pr[1] for pr in logreg.predict_proba(dtms['RR'][s])]
         print('\tFinished training classifier RR session #'+str(s))
+
+        
+
+        
         
 print('Write to csv...')
-df = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'family', 'RR', 'RR_pred', 'raw', 'n_words']]
-df.to_csv('smlse/NL_text.csv')
+df_s = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'family', 'RR', 'RR_pred', 'raw', 'n_words', 'session']]
+df_s.to_csv('smlse/NL_text.csv')
 # notext
-df = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'family', 'RR', 'RR_pred', 'n_words']]
-df.to_csv('smlse/NL_notext.csv')
-print('Finished, files including predictions can be found in ')
-
+df_s = df[['date', 'id', 'party', 'partyfacts', 'speaker', 'agenda', 'family', 'RR', 'RR_pred', 'n_words', 'session']]
+df_s.to_csv('smlse/NL_notext.csv')
 
 #%% assess best predictor words for last session
 
@@ -137,3 +137,5 @@ import eli5
 htmlobj=eli5.show_weights(logreg, top = 30, vec = vecs['RR'][7])
 with open('vis/eli5_weights_nl_clf.htm','wb') as f:
     f.write(htmlobj.data.encode("UTF-8"))
+
+print('Finished.')
