@@ -1,9 +1,0 @@
-﻿Dependent;Independent;Dataset;Lags;p;F
-Delta SMLSE;Delta Polling;full;3;0,9;0,18
-Delta SMLSE;Delta Polling;full;12;0,89;0,52
-Delta SMLSE;Delta Polling;government excluded;3;0,94;0,14
-Delta SMLSE;Delta Polling;government excluded;12;0,81;0,62
-Delta Polling;Delta SMLSE;full;3;0,15;1,83
-Delta Polling;Delta SMLSE;full;12;0,64;0,81
-Delta Polling;Delta SMLSE;government excluded;3;0,03;3,33
-Delta Polling;Delta SMLSE;government excluded;12;0,28;1,3
