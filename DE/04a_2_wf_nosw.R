@@ -24,4 +24,4 @@ tdm_train <- tdm_train[rowSums(tdm_train)!=0,]
 # Wordscores
 wf_nosw <- wordfish(tdm_train);rm(tdm_train)
 estim_nosw <- predict(wf_nosw, newdata=tdm);rm(tdm, wf_nosw)
-write.csv(estim_nosw, 'wordfish/estim_nosw.csv')
+write.csv(estim_nosw, 'sims/estim_nosw.csv')

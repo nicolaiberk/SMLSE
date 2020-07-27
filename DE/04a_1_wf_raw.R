@@ -31,17 +31,30 @@ tdm_train <- tdm_train[rowSums(tdm_train)!=0,]
 
 # Run wordfish & measure runtime
 start_time <- Sys.time()
+
 wf <- wordfish(tdm_train);rm(tdm_train)
+
+mod_time <- Sys.time()
+
+# predict for all
+estim <- predict(wf, newdata=tdm);rm(tdm)
+
 end_time <- Sys.time()
 
-diff = end_time - start_time
+diff_mod = difftime(mod_time, start_time, units = c('secs'))
+diff_tot = difftime(end_time, start_time, units = c('secs'))
 
 
-
-fileConn<-file("runtime_wf.txt")
-writeLines(c("Start time: ", as.String(start_time), '\n', 'End Time: ', as.String(end_time), '\n\n', 'Difference: ', diff), fileConn)
+fileConn<-file("runtime_wf_full.txt")
+writeLines(c("Start time: ", as.String(start_time), '\n',
+             'Model fitted: ', as.String(diff_mod), '\n',
+             'End Time: ', as.String(end_time), '\n',
+             'Difference Model fit: ', as.String(diff_mod), '\n',
+             'Difference model fit & estimation: ', as.String(diff_tot), '\n'
+             ), fileConn)
 close(fileConn)
 
+write.csv(estim, 'sims/estim.csv')
 
 
 # # extract coefficients
@@ -63,9 +76,3 @@ least <- coefs %>%
 
 write.csv(most, 'vis/most.csv')
 write.csv(least, 'vis/least.csv')
-
-
-
-# predict for all
-estim <- predict(wf, newdata=tdm);rm(tdm, wf)
-write.csv(estim, 'wordfish/estim.csv')
