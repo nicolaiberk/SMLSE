@@ -20,9 +20,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style('darkgrid')
 
-basedir = os.path.expanduser('~/Dropbox/Studium/Amsterdam/Studies/Semester 4/Master Thesis/data')
-df = pd.read_csv(basedir+'/dataverse_files/DE_text_20200526.csv')
-
+df = pd.read_csv('smlse/DE_text.csv')
 dt = str(datetime.now().strftime("%Y%m%d-%H%M"))
 
 #%% estimate cosin similarity of each speech to all AfD speeches
@@ -46,14 +44,14 @@ np.corrcoef(df.afd_pred, df.cosine_sim) # -0.17
 np.corrcoef(np.log(df.afd_pred), df.cosine_sim) -0.36
 
 # plot correlation
-sns.jointplot(df.cosine_sim, df.afd_pred).savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_corr.png')
+sns.jointplot(df.cosine_sim, df.afd_pred).savefig('vis/cosin_corr.png')
 plt.clf()
-sns.jointplot(df.cosine_sim, np.log(df.afd_pred)).savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_log_corr.png')
+sns.jointplot(df.cosine_sim, np.log(df.afd_pred)).savefig('vis/cosin_log_corr.png')
 plt.clf()
 # plot by party
-sns.violinplot(df.party, df.cosine_sim).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_party.png')
+sns.violinplot(df.party, df.cosine_sim).figure.savefig('vis/cosin_party.png')
 plt.clf()
-sns.boxplot(df.party, df.cosine_sim).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_party_box.png')
+sns.boxplot(df.party, df.cosine_sim).figure.savefig('vis/cosin_party_box.png')
 plt.clf()
 
 
@@ -64,15 +62,15 @@ np.corrcoef(df.cosine_sim_alt2, df.afd_pred) # -0.19
 np.corrcoef(df.cosine_sim_alt2, np.log(df.afd_pred)) # -0.36, both v similar to above
 
 # plot correlation
-sns.jointplot(df.cosine_sim_alt2, df.afd_pred).savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_alt_corr.png')
+sns.jointplot(df.cosine_sim_alt2, df.afd_pred).savefig('vis/cosin_alt_corr.png')
 plt.clf()
-sns.jointplot(df.cosine_sim_alt2, np.log(df.afd_pred)).savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_alt_log_corr.png')
+sns.jointplot(df.cosine_sim_alt2, np.log(df.afd_pred)).savefig('vis/cosin_alt_log_corr.png')
 plt.clf()
 
 # plot by party
-sns.violinplot(df.party, df.cosine_sim_alt2).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_alt_party.png')
+sns.violinplot(df.party, df.cosine_sim_alt2).figure.savefig('vis/cosin_alt_party.png')
 plt.clf()
-sns.boxplot(df.party, df.cosine_sim_alt2).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/cosin_alt_party_box.png')
+sns.boxplot(df.party, df.cosine_sim_alt2).figure.savefig('vis/cosin_alt_party_box.png')
 plt.clf()
 
 
@@ -97,17 +95,17 @@ for i in range(len(df)):
 print(np.corrcoef(df.afd_pred, df.jaccard))
 
 # plot correlation
-sns.jointplot(df.jaccard, df.afd_pred).savefig(basedir+'/dataverse_files/vis/sim_measures/jaccard_corr.png')
+sns.jointplot(df.jaccard, df.afd_pred).savefig('vis/jaccard_corr.png')
 plt.clf()
-sns.jointplot(df.jaccard, np.log(df.afd_pred)).savefig(basedir+'/dataverse_files/vis/sim_measures/jaccard_log_corr.png')
+sns.jointplot(df.jaccard, np.log(df.afd_pred)).savefig('vis/jaccard_log_corr.png')
 plt.clf()
 
 # plot by party
-sns.violinplot(df.party, df.jaccard).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/jaccard_party.png')
+sns.violinplot(df.party, df.jaccard).figure.savefig('vis/jaccard_party.png')
 plt.clf()
-sns.boxplot(df.party, df.jaccard).figure.savefig(basedir+'/dataverse_files/vis/sim_measures/jaccard_party_box.png')
+sns.boxplot(df.party, df.jaccard).figure.savefig('vis/jaccard_party_box.png')
 plt.clf()
 
 
 # write to csv
-df.to_csv(basedir+'/dataverse_files/DE_similarities.csv')
+df.to_csv('sims/DE_similarities.csv')
