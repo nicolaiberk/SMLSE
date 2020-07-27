@@ -47,6 +47,13 @@ X_final, y_res_pt = sm.fit_resample(dtm, df['party'])
 y_res=[t=='AfD' for t in y_res_pt]
 logreg.fit(X_final, y_res)
 
+
+# predict
+pred = logreg.predict_proba(dtm)
+l_pred=[]
+for p in pred:
+    l_pred.append(p[1])
+
 end_time = time.time()
 diff = f"{(end_time - start_time)} seconds"
 
@@ -59,12 +66,7 @@ text_file = open("runtime_smlse.txt", "w")
 text_file.write(f'Start time: {start_time},\n end time {end_time},\n difference: {diff}')
 text_file.close()
 
-# predict
-pred = logreg.predict_proba(dtm)
-l_pred=[]
-for p in pred:
-    l_pred.append(p[1])
-
+    
 df['afd_pred'] = l_pred
 
 
