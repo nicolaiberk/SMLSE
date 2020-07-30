@@ -83,3 +83,50 @@ party_dens_plot <- ggplot(at, aes(x=RR_pred, y=party, fill = party)) +
   xlab('SMLSE')
 ggsave('vis/AT_parties_density.png', party_dens_plot, width = 6, height=3)
 
+
+
+#### Appendix ####
+
+# B1: estimates including BZÖ
+fpvpbz <- at_pt_my %>% 
+  filter(party %in% c('FPÖ', 'ÖVP', 'BZÖ')) %>% 
+  ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
+  geom_line() +
+  geom_ribbon(alpha=0.2) +
+  scale_color_manual(values=c('orange', 'blue', 'black')) +
+  scale_fill_manual(values=c('orange', 'blue', 'black'))+
+  ylab('SMLSE') +
+  ggtitle('Austria')
+
+ggsave('vis/AT_fpvpbz_paper.png', fpvpbz, height = 4, width = 10)
+
+# B2: estimates for FP only
+
+## aggregate per month and party 
+at_pt_my_fp <- at %>% 
+  group_by(party, my) %>% 
+  summarise(mean_rr = wtd.mean(x=fpoe_pred, w=n_words),
+            sd_rr = sqrt(wtd.var(x=fpoe_pred, weights = n_words)),
+            n_speeches = length(fpoe_pred))
+
+at_pt_my_fp$se <- at_pt_my_fp$sd_rr/sqrt(at_pt_my_fp$n_speeches)
+at_pt_my_fp$ci_low <- at_pt_my_fp$mean_rr - 1.96*at_pt_my_fp$se
+at_pt_my_fp$ci_up <- at_pt_my_fp$mean_rr + 1.96*at_pt_my_fp$se
+
+## plot
+fpvp_fp <- at_pt_my_fp %>% 
+  filter(party %in% c('FPÖ', 'ÖVP')) %>% 
+  ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
+  geom_line() +
+  geom_ribbon(alpha=0.2) +
+  scale_color_manual(values=c('blue', 'black')) +
+  scale_fill_manual(values=c('blue', 'black'))+
+  ylab('SMLSE') +
+  ggtitle('Austria')
+
+ggsave('vis/AT_fpvp_fpest_paper.png', fpvp_fp, height = 4, width = 10)
+
