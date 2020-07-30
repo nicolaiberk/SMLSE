@@ -2,10 +2,6 @@
 Supervised Machine Learning Similarity Estimate
 
 
-The project is concerned with the measurement of rhetorical similarity of texts through supervised machine learning (SMLSE). This site contains the online appendix (see below) and reproducible code.
+The project is concerned with the measurement of rhetorical similarity of texts through supervised machine learning (SMLSE). This site contains the reproducible code. A paper draft will soon be added.
 
-Each country has its own folder, which contains the code for [00] pre-processing, [02] producing the SMLSE, and [03] visualising the estimates. The German data contains additional files for [01] classifier selection, [04a] wordfish estimation, [04b] estimation of cosine and jaccard similarity, and [04c] visualisation of these estimates.
-
-## Online Appendix
-
-### 1. Austria: FPOE-only estimates
+Each country has its own folder, which contains the code for pre-processing, producing the SMLSE, and visualising the estimates. The German data contains additional files for classifier selection, wordfish estimation, estimation of cosine and jaccard similarity, and visualisation of these estimates. The NL-folder contains an additional file exploring Geert Wilders' rhetoric in 2004.
