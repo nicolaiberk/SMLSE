@@ -1,28 +1,33 @@
-# assess similarity scores
-
 library(dplyr)
 library(ggplot2)
 library(ggridges)
 library(corrplot)
 library(psych)
 library(Hmisc)
-
-df <- read.csv('sims/DE_similarities.csv')
-smlse1000 <- read.csv('smlse/DE_smlse1000.csv')
-df$party <- factor(df$party, levels = c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent"))
-smlse1000$party <- factor(smlse1000$party, levels = c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent"))
-partycols=c("lightblue", "grey", "#FF6565", "gold", "lightgreen", "firebrick", 'blue')
-
-df$afd_pred_log <- log(df$afd_pred)
-df$afd[df$afd == 'False'] <- 0
-df$afd[df$afd == 'True'] <- 1
-df$afd <- as.numeric(df$afd)
+# library(BBmisc)
+library(RColorBrewer)
 
 
+# load similarity scores
+cosine_sim <- read.csv('sims/DE_similarities.csv')
+smlse_1000 <- read.csv('smlse/DE_smlse1000.csv')
+wordfish <- read.csv('sims/DE_wordfish.csv')
 
 
-## calculate group etimates
-df_pt <- df %>% 
+cor(cosine_sim$n_words_raw, cosine_sim$cosine_sim) # 0.87 - mainly higher scores due to higher likelihood of words to be included - report
+
+
+# normalise
+# cosine_sim$afd_pred <- normalize(cosine_sim$afd_pred)
+# cosine_sim$cosine_sim <- normalize(cosine_sim$cosine_sim)
+# cosine_sim$jaccard <- normalize(cosine_sim$jaccard)
+# 
+# smlse_1000$afd_pred <- normalize(smlse_1000$afd_pred)
+# 
+# wordfish$wordfish <- normalize(wordfish$wordfish)
+
+# aggregate cosine
+cosine_sim <- cosine_sim %>% 
   select(party, afd_pred, cosine_sim, jaccard, n_words_raw) %>% 
   group_by(party) %>% 
   summarise(mean_cs  = wtd.mean(cosine_sim, weights = n_words_raw), 
@@ -34,140 +39,36 @@ df_pt <- df %>%
             n_speeches = length(party))
 
 
-df_pt$se_est <- df_pt$sd_est/sqrt(df_pt$n_speeches)
-df_pt$ci_low_est <- df_pt$mean_est - 1.96*df_pt$se_est
-df_pt$ci_up_est <- df_pt$mean_est + 1.96*df_pt$se_est
+cosine_sim$se_est <- cosine_sim$sd_est/sqrt(cosine_sim$n_speeches)
+cosine_sim$ci_low_est <- cosine_sim$mean_est - 1.96*cosine_sim$se_est
+cosine_sim$ci_up_est <- cosine_sim$mean_est + 1.96*cosine_sim$se_est
 
-df_pt$se_cs <- df_pt$sd_cs/sqrt(df_pt$n_speeches)
-df_pt$ci_low_cs <- df_pt$mean_cs - 1.96*df_pt$se_cs
-df_pt$ci_up_cs <- df_pt$mean_cs + 1.96*df_pt$se_cs
+cosine_sim$se_cs <- cosine_sim$sd_cs/sqrt(cosine_sim$n_speeches)
+cosine_sim$ci_low_cs <- cosine_sim$mean_cs - 1.96*cosine_sim$se_cs
+cosine_sim$ci_up_cs <- cosine_sim$mean_cs + 1.96*cosine_sim$se_cs
 
-df_pt$se_j <- df_pt$sd_j/sqrt(df_pt$n_speeches)
-df_pt$ci_low_j <- df_pt$mean_j - 1.96*df_pt$se_j
-df_pt$ci_up_j <- df_pt$mean_j + 1.96*df_pt$se_j
-
-
-
-## plot
-p0 <- ggplot(df, aes(x = afd_pred, y = party, fill = party)) + 
-  geom_linerange(inherit.aes = F, data = df_pt, aes(xmin = ci_low_est, xmax = ci_up_est, y = party)) +
-  geom_point(inherit.aes = F, data = df_pt, aes(x = mean_est, y = party)) + 
-  xlab('') + ylab('') + ggtitle('SMLSE') + scale_fill_manual(values=partycols)
-
-p1 <- ggplot(df, aes(x = cosine_sim, y = party, fill = party)) + 
-  geom_linerange(inherit.aes = F, data = df_pt, aes(xmin = ci_low_cs, xmax = ci_up_cs, y = party)) +
-  geom_point(inherit.aes = F, data = df_pt, aes(x = mean_cs, y = party)) + 
-  xlab('') + ylab('') + ggtitle('Cosine Similarity') + scale_fill_manual(values=partycols)
-
-p2 <- ggplot(df, aes(x = jaccard, y = party, fill = party)) + 
-  geom_linerange(inherit.aes = F, data = df_pt, aes(xmin = ci_low_j, xmax = ci_up_j, y = party)) +
-  geom_point(inherit.aes = F, data = df_pt, aes(x = mean_j, y = party)) + 
-  xlab('') + ylab('') + ggtitle('Jaccard Similarity') + scale_fill_manual(values=partycols)
+cosine_sim$se_j <- cosine_sim$sd_j/sqrt(cosine_sim$n_speeches)
+cosine_sim$ci_low_j <- cosine_sim$mean_j - 1.96*cosine_sim$se_j
+cosine_sim$ci_up_j <- cosine_sim$mean_j + 1.96*cosine_sim$se_j
 
 
 
-png('vis/sim_measures_paper_corr.png', height = 15, width = 15, unit = 'cm', res = 1200)
-df %>% 
-  select(cosine_sim, jaccard, afd_pred_log) %>% 
-  pairs.panels( 
-             method = "pearson", # correlation method
-             hist.col = "lightblue",
-             density = T,  # show density plots
-             ellipses = F # show correlation ellipses
-  ) 
-dev.off()
-
-png('vis/sim_measures_all_corr.png', height = 20, width = 30, unit = 'cm', res = 1200)
-df %>% 
-  select(cosine_sim, cosine_sim_alt, cosine_sim_alt2, jaccard, afd_pred, afd_pred_log, afd) %>% 
-  pairs.panels(
-    method = "pearson", # correlation method
-    hist.col = "#00AFBB",
-    density = T,  # show density plots
-    ellipses = F # show correlation ellipses
-  )
-dev.off()
-
-
-# add wordfish
-df <-  read.csv('smlse/DE_notext.csv',fileEncoding = 'UTF-8')
-df <- df[df$n_words_raw > 50,]
-df$wordfish <- read.csv('sims/estim.csv')[,2]
-df$party <- factor(df$party, levels = c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent"))
-
-
-df_pt <- df %>% 
-  select(party, wordfish, n_words_raw) %>% 
-  group_by(party) %>% 
-  summarise(mean_wf  = wtd.mean(wordfish, weights = n_words_raw), 
-            sd_wf  = sqrt(wtd.var(x=wordfish, weights=n_words_raw, normwt = T)), 
-            n_speeches = length(party))
-
-
-df_pt$se_wf <- df_pt$sd_wf/sqrt(df_pt$n_speeches)
-df_pt$ci_low_wf <- df_pt$mean_wf - 1.96*df_pt$se_wf
-df_pt$ci_up_wf <- df_pt$mean_wf + 1.96*df_pt$se_wf
-
-
-p3 <- ggplot(df, aes(x = -wordfish, y = party, fill = party)) + 
-  geom_linerange(inherit.aes = F, data = df_pt, aes(xmin = -ci_low_wf, xmax = -ci_up_wf, y = party)) +
-  geom_point(inherit.aes = F, data = df_pt, aes(x = -mean_wf, y = party)) + 
-  xlab('') + ylab('') + ggtitle('WORDFISH') + scale_fill_manual(values=partycols)
-
-
-
-# version with subsampled smlse
-## calculate group etimates
-df_pt_1000 <- smlse1000 %>% 
+# aggregate smlse 1000
+smlse_1000 <- smlse_1000 %>% 
   select(party, afd_pred, n_words_raw) %>% 
   group_by(party) %>% 
-  summarise(mean_est = wtd.mean(afd_pred, weights = n_words_raw),
+  summarise(mean_1000 = wtd.mean(afd_pred, weights = n_words_raw),
             sd_est = sqrt(wtd.var(x=afd_pred,   weights=n_words_raw, normwt = T)),
             n_speeches = length(party))
 
 
-df_pt_1000$se_est <- df_pt_1000$sd_est/sqrt(df_pt_1000$n_speeches)
-df_pt_1000$ci_low_est <- df_pt_1000$mean_est - 1.96*df_pt_1000$se_est
-df_pt_1000$ci_up_est <- df_pt_1000$mean_est + 1.96*df_pt_1000$se_est
+smlse_1000$se_1000 <- smlse_1000$sd_est/sqrt(smlse_1000$n_speeches)
+smlse_1000$ci_low_1000 <- smlse_1000$mean_1000 - 1.96*smlse_1000$se_1000
+smlse_1000$ci_up_1000 <- smlse_1000$mean_1000 + 1.96*smlse_1000$se_1000
 
 
-
-## plot
-p4 <- ggplot(smlse1000, aes(x = afd_pred, y = party, fill = party)) + 
-  #geom_density_ridges(alpha = 0.2, show.legend = F) + 
-  geom_linerange(inherit.aes = F, data = df_pt_1000, aes(xmin = ci_low_est, xmax = ci_up_est, y = party)) +
-  geom_point(inherit.aes = F, data = df_pt_1000, aes(x = mean_est, y = party)) + 
-  xlab('') + ylab('') + ggtitle('SMLSE (subsampled model)') + scale_fill_manual(values=partycols)
-
-
-
-
-gridExtra::grid.arrange(p0, p1,
-                        p3, ncol = 1) %>% 
-  ggsave(filename = 'vis/sim_paper_pts.png')
-
-
-gridExtra::grid.arrange(p0, p4, p1,
-                        p3, ncol = 1) %>% 
-  ggsave(filename = 'vis/sim_paper_pts_smlse1000.png')
-
-
-
-#### WORDFISH ####
-
-
-# correlate with pred probs
-df <- read.csv('sims/DE_wordfish.csv')
-cor(df$wordfish, df$afd_pred)
-cor(df$wordfish_nosw, df$afd_pred)
-cor(df$wordfish_notrim, df$afd_pred)
-
-# re-arrange parties, define color scheme
-df$party <- factor(df$party, levels = c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent"))
-partycols = c('blue', 'black', 'red', 'gold', 'green', 'firebrick', 'lightblue')
-
-# aggregate per party
-df_pt <- df %>%
+# aggregate wordfish
+wordfish <- wordfish %>%
   group_by(party) %>% 
   summarise(wf = wtd.mean(wordfish, n_words_raw),
             wf_nosw = wtd.mean(wordfish_nosw, n_words_raw),
@@ -175,148 +76,76 @@ df_pt <- df %>%
             sd_wf = sqrt(wtd.var(x=wordfish, weights=n_words_raw, normwt = T)),
             sd_wf_nosw = sqrt(wtd.var(x=wordfish_nosw, weights=n_words_raw, normwt = T)),
             sd_wf_notrim = sqrt(wtd.var(x=wordfish_notrim, weights=n_words_raw, normwt = T)),
-            pred = wtd.mean(afd_pred, n_words_raw),
-            sd_pred = sqrt(wtd.var(x=afd_pred, weights=n_words_raw, normwt = T)),
             n_speeches = length(n_words_raw))
 
-df_pt$wf_se <- df_pt$sd_wf/sqrt(df_pt$n_speeches)
-df_pt$wf_ci_low <- df_pt$wf - 1.96*df_pt$wf_se
-df_pt$wf_ci_up <- df_pt$wf + 1.96*df_pt$wf_se
+wordfish$wf_se <- wordfish$sd_wf/sqrt(wordfish$n_speeches)
+wordfish$wf_ci_low <- wordfish$wf - 1.96*wordfish$wf_se
+wordfish$wf_ci_up <- wordfish$wf + 1.96*wordfish$wf_se
 
-df_pt$wf_nosw_se <- df_pt$sd_wf_nosw/sqrt(df_pt$n_speeches)
-df_pt$wf_nosw_ci_low <- df_pt$wf_nosw - 1.96*df_pt$wf_nosw_se
-df_pt$wf_nosw_ci_up <- df_pt$wf_nosw + 1.96*df_pt$wf_nosw_se
+wordfish$wf_nosw_se <- wordfish$sd_wf_nosw/sqrt(wordfish$n_speeches)
+wordfish$wf_nosw_ci_low <- wordfish$wf_nosw - 1.96*wordfish$wf_nosw_se
+wordfish$wf_nosw_ci_up <- wordfish$wf_nosw + 1.96*wordfish$wf_nosw_se
 
-df_pt$wf_notrim_se <- df_pt$sd_wf_notrim/sqrt(df_pt$n_speeches)
-df_pt$wf_notrim_ci_low <- df_pt$wf_notrim - 1.96*df_pt$wf_notrim_se
-df_pt$wf_notrim_ci_up <- df_pt$wf_notrim + 1.96*df_pt$wf_notrim_se
-
-df_pt$pred_se <- df_pt$sd_pred/sqrt(df_pt$n_speeches)
-df_pt$pred_ci_low <- df_pt$pred - 1.96*df_pt$pred_se
-df_pt$pred_ci_up <- df_pt$pred + 1.96*df_pt$pred_se
+wordfish$wf_notrim_se <- wordfish$sd_wf_notrim/sqrt(wordfish$n_speeches)
+wordfish$wf_notrim_ci_low <- wordfish$wf_notrim - 1.96*wordfish$wf_notrim_se
+wordfish$wf_notrim_ci_up <- wordfish$wf_notrim + 1.96*wordfish$wf_notrim_se
 
 
+# merge
+df <- merge(cosine_sim, wordfish, by = 'party')
+df <- merge(smlse_1000, df, by = 'party')
+
+partycols=c("blue", 'lightblue', "firebrick", "gold", "lightgreen", "black", "#FF6565")
+df$party <- factor(df$party, levels = c("AfD", "independent", "PDS/LINKE", "FDP", "GRUENE", "CDU/CSU", "SPD"))
 
 
-
-# plot distributions
-party_dens_wf <- ggplot(df, aes(x=wordfish, y=party, fill = party)) + 
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=df_pt, aes(x = wf, y=party), show.legend = F)+
-  geom_linerange(data=df_pt, aes(xmin = wf_ci_low, xmax = wf_ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  xlab('Score')+
-  ggtitle('Wordfish')
-
-party_dens_wf_nosw <- ggplot(df, aes(x=wordfish_nosw, y=party, fill = party)) + 
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=df_pt, aes(x = wf_nosw, y=party), show.legend = F)+
-  geom_linerange(data=df_pt, aes(xmin = wf_nosw_ci_low, xmax = wf_nosw_ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  xlab('Score')+
-  ggtitle('Wordfish (no stopwords)')
-
-party_dens_wf_notrim <- ggplot(df, aes(x=wordfish_notrim, y=party, fill = party)) + 
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=df_pt, aes(x = wf_notrim, y=party), show.legend = F)+
-  geom_linerange(data=df_pt, aes(xmin = wf_notrim_ci_low, xmax = wf_notrim_ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  xlab('Score')+
-  ggtitle('Wordfish (all terms)')
-
-party_dens_pred <- ggplot(df, aes(x=afd_pred, y=party, fill = party)) + 
-  geom_density_ridges(alpha=0.2, show.legend = F)+
-  geom_point(data=df_pt, aes(x = pred, y=party), show.legend = F)+
-  geom_linerange(data=df_pt, aes(xmin = pred_ci_low, xmax = pred_ci_up, y=party), inherit.aes = F)+
-  scale_fill_manual(values=partycols)+
-  xlab('Score')+
-  ggtitle('SMLSE')
+# plot per party
+cols= brewer.pal(4, 'Set1')
+df %>% ggplot() +
+  facet_grid(rows = vars(party))+
+  geom_point(aes(x=mean_est, y=0, col = cols[1])) +
+  geom_linerange(aes(xmin = ci_low_est, xmax = ci_up_est, col = cols[1], y=0)) +
+  geom_point(aes(x=mean_1000, y=-1, col = cols[2])) +
+  geom_linerange(aes(xmin = ci_low_1000, xmax = ci_up_1000, col = cols[2], y=-1)) +
+  geom_point(aes(x=-wf, y=-2, col = cols[3])) +
+  geom_linerange(aes(xmin = -wf_ci_low, xmax = -wf_ci_up, col = cols[3], y=-2)) +
+  geom_point(aes(x=mean_cs, y=-3, col = cols[4])) +
+  geom_linerange(aes(xmin = ci_low_cs, xmax = ci_up_cs, col = cols[4], y=-3)) +
+  geom_vline(xintercept = 0, col = 'red', lty = 2) +
+  scale_y_continuous(name = ''
+                     , breaks = c(), minor_breaks = c(0,-1,-2,-3)
+                     # , breaks=c(0,-1,-2,-3), labels = c('SMLSE', 'SMLSE (subset)', 'Wordfish', 'Cosine Similarity')
+                     ) + 
+  scale_color_discrete(name = "", labels = c("SMLSE", "SMLSE (subset)", "Wordfish", "Cosine similarity"))+
+  scale_x_continuous(name = 'Normalized estimate', limits = c(-1,3))
 
 
-party_dens <- gridExtra::grid.arrange(party_dens_wf, party_dens_pred)
-ggsave('vis/wordfish_pt_dens.png', party_dens)
+# plot per measure
+p0 <- ggplot(df) + 
+  geom_point(aes(x=mean_est, y=party, col = party)) +
+  geom_linerange(aes(xmin = ci_low_est, xmax = ci_up_est, y=party, col = party)) +
+  xlab('') + ylab('') + ggtitle('SMLSE') + scale_color_manual(values=partycols) +
+  theme(legend.position = 'none') # + xlim(c(0,1))
 
-party_dens <- gridExtra::grid.arrange(party_dens_wf, party_dens_wf_nosw, party_dens_wf_notrim, party_dens_pred)
-ggsave('vis/wordfish_pt_dens_all.png', party_dens)
+p1 <- ggplot(df) + 
+  geom_point(aes(x=mean_1000, y=party, col = party)) +
+  geom_linerange(aes(xmin = ci_low_1000, xmax = ci_up_1000, y=party, col = party)) +
+  xlab('') + ylab('') + ggtitle('SMLSE (restricted model)') + scale_color_manual(values=partycols) +
+  theme(legend.position = 'none') # + xlim(c(0,1))
 
+p2 <- ggplot(df) + 
+  geom_point(aes(x=-wf, y=party, col = party)) +
+  geom_linerange(aes(xmin = -wf_ci_low, xmax = -wf_ci_up, y=party, col = party)) +
+  xlab('') + ylab('') + ggtitle('Wordfish') + scale_color_manual(values=partycols) +
+  theme(legend.position = 'none')
 
-
-# look at party similarities across time 
-df$date <- as.Date(df$date, '%Y-%m-%d')
-df$my <- lubridate::floor_date(df$date, "month")
-
-
-df_pt_my <- df %>%
-  group_by(party, my) %>% 
-  summarise(wf = wtd.mean(wordfish, n_words_raw),
-            wf_nosw = wtd.mean(wordfish_nosw, n_words_raw),
-            wf_notrim = wtd.mean(wordfish_notrim, n_words_raw),
-            pred = wtd.mean(afd_pred, n_words_raw),
-            n_speeches = length(n_words_raw))
-
-
-p1a <- ggplot(df_pt_my, aes(x=my, y=wf, col = party)) + 
-  geom_line() +
-  scale_color_manual(values = partycols)+
-  ylab('Score')+
-  ggtitle('Wordfish')
-
-p1b <- ggplot(df_pt_my, aes(x=my, y=wf_nosw, col = party)) + 
-  geom_line() +
-  scale_color_manual(values = partycols)+
-  ylab('Score')+
-  ggtitle('Wordfish (no stopwords)')
-
-p1c <- ggplot(df_pt_my, aes(x=my, y=wf_notrim, col = party)) + 
-  geom_line() +
-  scale_color_manual(values = partycols)+
-  ylab('Score')+
-  ggtitle('Wordfish (all terms)')
+p3 <- ggplot(df) + 
+  geom_point(aes(x=mean_cs, y=party, col = party)) +
+  geom_linerange(aes(xmin = ci_low_cs, xmax = ci_up_cs, y=party, col = party)) +
+  xlab('') + ylab('') + ggtitle('Cosine similarity') + scale_color_manual(values=partycols) +
+  theme(legend.position = 'none')
 
 
-p2 <- ggplot(df_pt_my, aes(x=my, y=pred, col = party)) + 
-  geom_line() +
-  scale_color_manual(values = partycols)+
-  ylab('Score')+
-  ggtitle('"SMLSE"')
-
-
-full <- gridExtra::grid.arrange(p1a,p2)
-ggsave('vis/wordfish_pt_my.png', full)
-
-full <- gridExtra::grid.arrange(p1a,p1b,p1c,p2)
-ggsave('vis/wordfish_pt_my_all.png', full)
-
-# speaker distribution
-
-## aggregate
-df_sp <- df %>% 
-  group_by(speaker, party) %>% 
-  summarise(pred = weighted.mean(x=afd_pred, w=n_words_raw),
-            wf = weighted.mean(x=wordfish, w=n_words_raw),
-            n_speeches = length(afd_pred),
-            n_words = sum(n_words_raw))
-
-## plot
-speakers_wf <-
-  ggplot(df_sp[df_sp$n_words>100,],aes(x=party, y=wf, fill=party)) + 
-  geom_dotplot(binwidth=0.1, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F)+
-  scale_fill_manual(values=partycols) +
-  theme_minimal() +
-  xlab('')+
-  ylab('Score')+
-  ggtitle('Wordfish')
-
-speakers_pred <-
-  ggplot(df_sp[df_sp$n_words>100,],aes(x=party, y=pred, fill=party)) + 
-  geom_dotplot(binwidth=0.0275, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F)+
-  scale_fill_manual(values=partycols) +
-  theme_minimal() +
-  xlab('')+
-  ylab('Score')+
-  ggtitle('SMLSE')
-
-speakers_comp <- gridExtra::grid.arrange(speakers_wf, speakers_pred)
-ggsave('vis/wordfish_speakers.png', speakers_comp)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts.jpg', height = 6, width = 8)
 
 
