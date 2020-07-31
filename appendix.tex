@@ -1,0 +1,73 @@
+\subsection*{Appendix A}
+
+\begin{table}[ht!]
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classifier}    & \textbf{Vectorizer} & \textbf{Stemmed} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} \\ \hline
+Logistic Regression    & tfidf               & raw              & 0.87              & 0.55               & 0.64            \\ \hline
+Logistic Regression    & tfidf               & stems            & 0.83              & 0.45               & 0.69            \\ \hline
+Logistic Regression    & count               & raw              & 0.84              & 0.46               & 0.53            \\ \hline
+Logistic Regression    & count               & stems            & 0.83              & 0.43               & 0.54            \\ \hline
+Naive Bayes            & tfidf               & raw              & 0.85              & 0.48               & 0.64            \\ \hline
+Naive Bayes            & tfidf               & stems            & 0.84              & 0.46               & 0.62            \\ \hline
+Naive Bayes            & count               & raw              & 0.85              & 0.48               & 0.44            \\ \hline
+Naive Bayes            & count               & stems            & 0.84              & 0.47               & 0.43            \\ \hline
+Support Vector Machine & tfidf               & raw              & 0.88              & 0.58               & 0.55            \\ \hline
+Support Vector Machine & tfidf               & stems            & 0.84              & 0.47               & 0.62            \\ \hline
+Support Vector Machine & count               & raw              & 0.82              & 0.41               & 0.48            \\ \hline
+Support Vector Machine & count               & stems            & 0.82              & 0.4                & 0.51            \\ \hline
+\end{tabular}
+\caption{Performance of different classifiers. The cose classifier is in the first row.}
+\label{tab:perf}
+\end{table}
+\newpage 
+
+\subsection*{Appendix B1}
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{appendix_vis/AT_fpvpbz_paper.png}
+    \caption{Estimates for Austria including BZÖ}
+    \label{fig:bzoe}
+\end{figure}
+
+\subsection*{Appendix B2}
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{appendix_vis/AT_fpvp_fpest_paper.png}
+    \caption{Estimates for Austria trained to detect FPÖ-speeches only.}
+    \label{fig:fponly}
+\end{figure}
+\newpage
+
+\subsection*{Appendix C}
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{appendix_vis/nl_vvd_cda_rr.png}
+    \caption{Estimates for the Netherlands including CDA and FvD.}
+    \label{fig:cda}
+\end{figure}
+
+\subsection*{Appendix D}
+\begin{table}[ht!]
+\begin{tabular}{|l|l|l|l|}
+\hline
+Word        & Contribution & Word           & Contribution \\ \hline
+minister    & 50.2         & mij            & 8.4          \\ \hline
+kunnen      & 16.5         & kabinet        & 8.2          \\ \hline
+vind        & 15.8         & hij            & 7.8          \\ \hline
+Algerije    & 12           & ministerie     & 7.3          \\ \hline
+ben         & 11.7         & Het            & 7.1          \\ \hline
+motie       & 10.8         & Arabië         & 7.1          \\ \hline
+LPF         & 10.7         & imam           & 7            \\ \hline
+AIVD        & 9.9          & terroristische & 6.9          \\ \hline
+Wij         & 9.9          & groot          & 6.9          \\ \hline
+zeker       & 9.6          & Europa         & 6.8          \\ \hline
+mening      & 9.6          & onderzoek      & 6.2          \\ \hline
+Defensie    & 9.5          & Dutchbat       & 6.2          \\ \hline
+terroristen & 9.4          & man            & 6            \\ \hline
+Dat         & 9.3          & moskeeën       & 5.6          \\ \hline
+Saoedi      & 8.6          & moskee         & 5.5          \\ \hline
+\end{tabular}
+\caption{Thirty words with the strongest positive contribution in Wilders' speeches as a member of the VVD 2004.}
+\label{tab:wilders}
+\end{table}
