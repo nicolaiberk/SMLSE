@@ -1,7 +1,10 @@
 # SMLSE
 Supervised Machine Learning Similarity Estimate
 
-![](DE/vis/DE_speakers.png)
+!['Radical-rightness' of German MPs.](DE/vis/DE_speakers.png)
+
+!['Radical-rightness' of Geert Wilders and Mark Rutte preceding Wilders' exit from the VVD.](NL/vis/Wilders_Rutte.png)
+
 
 
 The project is concerned with the measurement of rhetorical similarity of texts through supervised machine learning (SMLSE). This site contains the reproducible code. A paper draft will soon be added.
