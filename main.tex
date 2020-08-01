@@ -3,7 +3,11 @@
 \usepackage{graphicx}
 \usepackage{blindtext}
 \usepackage{subfiles}
+\usepackage{hyperref}
 \usepackage[table]{xcolor}
+\usepackage{rotating}
+
+\usepackage[TS1,T1]{fontenc}
 
 \usepackage[
 backend=biber,
@@ -24,7 +28,7 @@ citestyle=authoryear
 \addbibresource{refs.bib}
 
 \title{Measuring Rhetorical Similarity with Supervised Machine Learning
-\footnote{Replication materials are available via \url{https://github.com/nicolaiberk/SMLSE}}
+\footnote{Replication materials are available via \href{https://github.com/nicolaiberk/SMLSE}{https://github.com/nicolaiberk/SMLSE}}
 }
 \author{Nicolai Berk}
 \date{\today}
@@ -205,7 +209,7 @@ Summarised, I expect the FPÖ to be less distinctive and the ÖVP to be more ali
 \end{minipage}
 \hfill
 \begin{minipage}{\textwidth}
-\includegraphics[width=\linewidth]{}
+\includegraphics[width=\linewidth]{NL/vis/nl_vvd_rr_paper.png}
 \end{minipage}
 \caption{Monthly average 'radical-rightness'-SMLSEs for centre-right and radical-right parties in Austria and the Netherlands with 95\% confidence intervals. Red shaded areas indicate coalition governments and cooperation in minority governments.}
 \label{fig:govs}
@@ -235,7 +239,7 @@ Beyond parties, the similarity or distinctiveness of particular speakers can als
 
 \begin{sidewaysfigure}
     \centering
-    \includegraphics[width=19cm]{DE_speakers.png}
+    \includegraphics[width=19cm]{DE/vis/DE_speakers.png}
     \caption{'Radical-rightness'-SMLSEs for speakers of the current German Bundestag.}
     \label{fig:speakers}
 \end{sidewaysfigure}
@@ -255,7 +259,7 @@ In the Netherlands, the rise of the LPF and the subsequent politicisation of imm
 
 
 \begin{figure}
-\includegraphics[width=\linewidth]{Wilders_both.png}
+\includegraphics[width=\linewidth]{NL/vis/Wilders_both.png}
 \caption{\textbf{Left}: quarterly SMLSE estimates with 95\% confidence intervals for Geert Wilders and Mark Rutte in 2004. The vertical line indicates the date Wilders' left the party. \textbf{Right}: Placement of Wilders (red), compared to social-liberal (turquoise) and right-wing members (light-red) within the VVD in 2004, preceding Wilders' exit.}
 \label{fig:wilders}
 \end{figure}
@@ -281,7 +285,7 @@ The weak performance becomes more obvious once the measure is correlated with sp
 
 \begin{figure}
     \centering
-    \includegraphics[width = \textwidth]{similarity_pts.jpg}
+    \includegraphics[width = \textwidth]{DE/vis/similarity_pts.jpg}
     \caption{Mean party estimates with 95\% confidence intervals for SMLSE, cosine similarity and wordfish estimates. Both wordfish and the restricted SMLSE model were trained on a subset of 1000 speeches, which then estimated the positions of all speeches.}
     \label{fig:comp}
 \end{figure}
