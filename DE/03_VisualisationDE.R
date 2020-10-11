@@ -9,6 +9,7 @@ library(ggridges)
 options(stringsAsFactors = FALSE)
 
 # Import ####
+setwd("DE")
 de <- read.csv('smlse/DE_notext.csv', fileEncoding = 'UTF-8')
 de$date <- as.Date(de$date)
 
@@ -32,6 +33,7 @@ de_sp$se <- de_sp$sd_w/sqrt(de_sp$n_speeches)
 de_sp$ci_low <- de_sp$mean_w - 1.96*de_sp$se
 de_sp$ci_up <- de_sp$mean_w + 1.96*de_sp$se
 
+
 # plot
 afd_members <- c('Alice Weidel', 'Frauke Petry') 
 cdu_members <- c('Angela Merkel', 'Christian Freiherr von Stetten') 
@@ -39,7 +41,7 @@ spd_members <- c('Martin Schulz','Andrea Nahles')
 fdp_members <- c('Christian Lindner', 'Karlheinz Busen')
 green_members <- c('Annalena Baerbock', 'Renate Künast')
 left_members <- c('Fabio De Masi', 'Katja Kipping')
-future_ind <- c('Lars Herrmann', 'Uwe Kamann', 'Verena Hartmann')
+future_ind <- c('Lars Herrmann', 'Uwe Kamann', 'Verena Hartmann', 'Frank Pasemann')
 important_members <- c(afd_members, cdu_members, spd_members, fdp_members, green_members, left_members, future_ind)
 
 de_sp$labels = ""
@@ -48,6 +50,9 @@ de_sp$labelcol = F
 de_sp$labelcol[de_sp$speaker %in% important_members]<- T
 
 de_sp$labels[de_sp$speaker %in% c('Lars Herrmann', 'Verena Hartmann')] <- ''
+
+# write to csv for website
+write.csv(file = 'smlse/DE_speakers.csv', x =  de_sp)
 
 speaker_plot <-
   ggplot(de_sp[de_sp$n_words>100,],aes(x=party, y=mean_w, fill=party, label = labels, col = labelcol)) + 
