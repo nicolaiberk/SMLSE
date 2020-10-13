@@ -69,6 +69,7 @@ speaker_plot <-
          axis.title.y = element_text(color = "grey20", size = 12, angle = 90, hjust = .5, vjust = .5, face = "plain")
         )
 ggsave('vis/DE_speakers.png', speaker_plot, height = 7, width = 13)
+ggsave('vis/DE_speakers_pres.png', speaker_plot, height = 6, width = 10)
 
 
 ## aggregate per party
