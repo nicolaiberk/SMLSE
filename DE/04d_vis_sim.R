@@ -9,9 +9,9 @@ library(RColorBrewer)
 
 
 # load similarity scores
-cosine_sim <- read.csv('sims/DE_similarities.csv')
-smlse_1000 <- read.csv('smlse/DE_smlse1000.csv')
-wordfish <- read.csv('sims/DE_wordfish.csv')
+cosine_sim <- read.csv('DE/sims/DE_similarities.csv')
+smlse_1000 <- read.csv('DE/smlse/DE_smlse1000.csv')
+wordfish <- read.csv('DE/sims/DE_wordfish.csv')
 
 
 cor(cosine_sim$n_words_raw, cosine_sim$cosine_sim) # 0.87 - mainly higher scores due to higher likelihood of words to be included - report
@@ -146,6 +146,7 @@ p3 <- ggplot(df) +
   theme(legend.position = 'none')
 
 
-gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts.jpg', height = 6, width = 8)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'DE/vis/similarity_pts.jpg', height = 6, width = 8)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'DE/vis/similarity_pts_presi.jpg', height = 5, width = 7)
 
 
