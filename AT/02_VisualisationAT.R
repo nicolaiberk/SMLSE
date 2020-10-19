@@ -9,14 +9,11 @@ library(ggridges)
 
 options(stringsAsFactors = FALSE)
 
+setwd('AT')
+
 at <- read.csv('smlse/AT_notext.csv', encoding = 'UTF-8')
 
 at$date <- as.Date(at$date,format = '%Y-%m-%d')
-
-colnames(at)[10] <- 'bzoe'
-colnames(at)[11] <- 'fpoe'
-colnames(at)[12] <- 'bzoe_pred'
-colnames(at)[13] <- 'fpoe_pred'
 
 
 at <- at[!at$party %in% c('', 'independent'),]
@@ -53,6 +50,7 @@ fpvp <- at_pt_my %>%
 ggsave('vis/AT_fpvp_poster.png', fpvp, height = 4, width = 20)
 ggsave('vis/AT_fpvp_presi.png', fpvp, height = 6, width = 10)
 ggsave('vis/AT_fpvp_paper.png', fpvp, height = 4, width = 10)
+
 
 
 ## aggregate per party
@@ -107,9 +105,9 @@ ggsave('vis/AT_fpvpbz_paper.png', fpvpbz, height = 4, width = 10)
 ## aggregate per month and party 
 at_pt_my_fp <- at %>% 
   group_by(party, my) %>% 
-  summarise(mean_rr = wtd.mean(x=fpoe_pred, w=n_words),
-            sd_rr = sqrt(wtd.var(x=fpoe_pred, weights = n_words)),
-            n_speeches = length(fpoe_pred))
+  summarise(mean_rr = wtd.mean(x=FPÖ_pred, w=n_words),
+            sd_rr = sqrt(wtd.var(x=FPÖ_pred, weights = n_words)),
+            n_speeches = length(FPÖ_pred))
 
 at_pt_my_fp$se <- at_pt_my_fp$sd_rr/sqrt(at_pt_my_fp$n_speeches)
 at_pt_my_fp$ci_low <- at_pt_my_fp$mean_rr - 1.96*at_pt_my_fp$se
@@ -130,3 +128,145 @@ fpvp_fp <- at_pt_my_fp %>%
 
 ggsave('vis/AT_fpvp_fpest_paper.png', fpvp_fp, height = 4, width = 10)
 
+
+# B3: VP estimates
+
+## aggregate per month and party 
+at_pt_my <- at %>% 
+  group_by(party, my) %>% 
+  summarise(mean_vp = wtd.mean(x=ÖVP_pred, w=n_words),
+            sd_vp = sqrt(wtd.var(x=ÖVP_pred, weights = n_words)),
+            n_speeches = length(ÖVP_pred))
+
+at_pt_my$se <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low <- at_pt_my$mean_vp - 1.96*at_pt_my$se
+at_pt_my$ci_up <- at_pt_my$mean_vp + 1.96*at_pt_my$se
+
+
+# plot
+vp_est <- at_pt_my %>% 
+  filter(party %in% c('FPÖ', 'ÖVP')) %>% 
+  ggplot(aes(x = my, y = mean_vp, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
+  geom_line() +
+  geom_ribbon(alpha=0.2) +
+  scale_color_manual(values=c('blue', 'black')) +
+  scale_fill_manual(values=c('blue', 'black'))+
+  ylab('SMLSE') +
+  ggtitle('Austria')
+
+ggsave('vis/AT_vp_est_poster.png', vp_est, height = 4, width = 20)
+ggsave('vis/AT_vp_est_presi.png', vp_est, height = 6, width = 10)
+ggsave('vis/AT_vp_est_paper.png', vp_est, height = 4, width = 10)
+
+
+# B4: increased sim VP mit FP 2018
+at$month <- floor_date(at$date, "month")
+
+
+# define dates
+kurz_takeover <- as.Date('14.05.2017', format = '%d.%m.%Y')
+# kurz_elected  <- as.Date('1.7.2017' ,format = '%d.%m.%Y')
+election <- as.Date('15.10.2017' ,format = '%d.%m.%Y')
+coalition <- as.Date('15.12.2017' ,format = '%d.%m.%Y')
+
+at_pt_my <- at %>% 
+  group_by(party, month) %>% 
+  summarise(mean_rr = wtd.mean(x=RR_pred, w=n_words),
+            sd_rr = sqrt(wtd.var(x=RR_pred, weights = n_words)),
+            mean_vp = wtd.mean(x=ÖVP_pred, w=n_words),
+            sd_vp = sqrt(wtd.var(x=ÖVP_pred, weights = n_words)),
+            n_speeches = length(RR_pred))
+
+at_pt_my$se_rr <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_rr <- at_pt_my$mean_rr - 1.96*at_pt_my$se_rr
+at_pt_my$ci_up_rr <- at_pt_my$mean_rr + 1.96*at_pt_my$se_rr
+
+at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
+at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
+
+kurz_vp <- at_pt_my %>% 
+  filter(party %in% c('ÖVP', 'SPÖ')) %>% 
+  ggplot(aes(x = month, y = mean_rr, col=party, fill=party, ymin = ci_low_rr, ymax = ci_up_rr))+ 
+  geom_line() +
+  geom_ribbon(alpha=0.2) +
+  geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
+  geom_label(inherit.aes = F,
+             label = 'Takeover Kurz',
+             aes(x =kurz_takeover, y = 0.25)) +
+  geom_label(inherit.aes = F,
+             label = 'Election',
+             aes(x =election, y = 0.325)) +
+  geom_label(inherit.aes = F,
+             label = 'Coalition',
+             aes(x =coalition, y = 0.4)) +
+  scale_color_manual(values=c('black', 'red')) +
+  scale_fill_manual(values=c('black', 'red')) +
+  ylab('SMLSE') +
+  ylim(c(-0.1,0.6)) +
+  xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
+  ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+
+ggsave('vis/AT_kurz_vp_presi.png', fpvp, height = 6, width = 10)
+ggsave('vis/AT_kurz_vp_paper.png', fpvp, height = 4, width = 10)
+
+
+# B5: increase sim FP mit VP 2018
+
+kurz_fp <- at_pt_my %>% 
+  filter(party %in% c('FPÖ', 'SPÖ')) %>% 
+  ggplot(aes(x = month, y = mean_vp, col=party, fill=party, ymin = ci_low_vp, ymax = ci_up_vp))+ 
+  geom_line() +
+  geom_ribbon(alpha=0.2) +
+  # geom_point(aes(x=at$date, y=at$RR_pred), alpha = 0.1, inherit.aes = F) +
+  geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
+  geom_label(inherit.aes = F,
+            label = 'Takeover Kurz',
+            aes(x =kurz_takeover, y = 0.6)) +
+  geom_label(inherit.aes = F,
+            label = 'Election',
+            aes(x =election, y = 0.6)) +
+  geom_label(inherit.aes = F,
+            label = 'Coalition',
+            aes(x =coalition, y = 0.5)) +
+  scale_color_manual(values=c('blue', 'red')) +
+  scale_fill_manual(values=c('blue', 'red')) +
+  ylab('SMLSE') +
+  ylim(c(-0.1,0.6)) +
+  xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
+  ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+
+ggsave('vis/AT_kurz_fp_presi.png', fpvp, height = 6, width = 10)
+ggsave('vis/AT_kurz_fp_paper.png', fpvp, height = 4, width = 10)
+
+kurz_comp <- gridExtra::grid.arrange(kurz_vp, kurz_fp)
+ggsave('vis/AT_kurz_comp.png', kurz_comp, height = 8, width = 10)
+
+
+# B6: SP only, compaerd to either party
+kurz_sp <- at_pt_my %>% 
+  filter(party %in% c('SPÖ')) %>% 
+  ggplot(aes(x = month, y = mean_vp, col=party, fill=party, ymin = ci_low_vp, ymax = ci_up_vp))+ 
+  geom_line(col = 'black') +
+  geom_line(aes(y=mean_rr), col = 'blue') +
+  geom_ribbon(alpha=0.2, fill = 'black', col = 'black') +
+  geom_ribbon(aes(y=mean_rr, ymin = ci_low_rr, ymax = ci_up_rr), alpha=0.2, fill = 'blue', col = 'blue') +
+  # geom_point(aes(x=at$date, y=at$RR_pred), alpha = 0.1, inherit.aes = F) +
+  geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
+  geom_label(inherit.aes = F,
+             label = 'Takeover Kurz',
+             aes(x =kurz_takeover, y = 0.6)) +
+  geom_label(inherit.aes = F,
+             label = 'Election',
+             aes(x =election, y = 0.6)) +
+  geom_label(inherit.aes = F,
+             label = 'Coalition',
+             aes(x =coalition, y = 0.5)) +
+  ylab('SMLSE') +
+  ylim(c(-0.1,0.6)) +
+  xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
+  ggtitle('Development of SPÖ similarity', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+
+ggsave('vis/AT_kurz_sp.png', kurz_sp, height = 4, width = 10)
