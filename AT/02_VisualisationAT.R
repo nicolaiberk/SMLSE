@@ -187,30 +187,30 @@ at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
 at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
 at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
 
-fp_est <- at_pt_my %>% 
+kurz_vp <- at_pt_my %>% 
   filter(party %in% c('ÖVP', 'SPÖ')) %>% 
   ggplot(aes(x = month, y = mean_rr, col=party, fill=party, ymin = ci_low_rr, ymax = ci_up_rr))+ 
   geom_line() +
   geom_ribbon(alpha=0.2) +
   geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
   geom_label(inherit.aes = F,
-             label = 'Takeover Kurz',
+             label = 'Takeover\nKurz',
              aes(x =kurz_takeover, y = 0.25)) +
   geom_label(inherit.aes = F,
              label = 'Election',
              aes(x =election, y = 0.325)) +
   geom_label(inherit.aes = F,
-             label = 'Coalition',
+             label = 'Coalition\nFormation',
              aes(x =coalition, y = 0.4)) +
   scale_color_manual(values=c('black', 'red')) +
   scale_fill_manual(values=c('black', 'red')) +
   ylab('SMLSE') +
-  ylim(c(-0.1,0.6)) +
+  coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
   ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
 
-ggsave('vis/AT_kurz_fp_est_presi.png', fp_est, height = 6, width = 10)
-ggsave('vis/AT_kurz_fp_est_paper.png', fp_est, height = 4, width = 10)
+ggsave('vis/AT_kurz_fp_est_presi.png', kurz_vp, height = 6, width = 10)
+ggsave('vis/AT_kurz_fp_est_paper.png', kurz_vp, height = 4, width = 10)
 
 
 
@@ -225,18 +225,18 @@ kurz_fp <- at_pt_my %>%
   # geom_point(aes(x=at$date, y=at$RR_pred), alpha = 0.1, inherit.aes = F) +
   geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
   geom_label(inherit.aes = F,
-            label = 'Takeover Kurz',
-            aes(x =kurz_takeover, y = 0.6)) +
+            label = 'Takeover\nKurz',
+            aes(x =kurz_takeover, y = 0.25)) +
   geom_label(inherit.aes = F,
             label = 'Election',
-            aes(x =election, y = 0.6)) +
+            aes(x =election, y = 0.05)) +
   geom_label(inherit.aes = F,
-            label = 'Coalition',
-            aes(x =coalition, y = 0.5)) +
+            label = 'Coalition\nFormation',
+            aes(x =coalition, y = 0.45)) +
   scale_color_manual(values=c('blue', 'red')) +
   scale_fill_manual(values=c('blue', 'red')) +
   ylab('SMLSE') +
-  ylim(c(-0.1,0.6)) +
+  coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
   ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
 
@@ -258,16 +258,16 @@ kurz_sp <- at_pt_my %>%
   # geom_point(aes(x=at$date, y=at$RR_pred), alpha = 0.1, inherit.aes = F) +
   geom_vline(xintercept = c(kurz_takeover, election, coalition)) +
   geom_label(inherit.aes = F,
-             label = 'Takeover Kurz',
-             aes(x =kurz_takeover, y = 0.6)) +
+             label = 'Takeover\nKurz',
+             aes(x =kurz_takeover, y = 0.25)) +
   geom_label(inherit.aes = F,
              label = 'Election',
-             aes(x =election, y = 0.6)) +
+             aes(x =election, y = 0.05)) +
   geom_label(inherit.aes = F,
-             label = 'Coalition',
-             aes(x =coalition, y = 0.5)) +
+             label = 'Coalition\nFormation',
+             aes(x =coalition, y = 0.45)) +
   ylab('SMLSE') +
-  ylim(c(-0.1,0.6)) +
+  coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
   ggtitle('Development of SPÖ similarity', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
 
