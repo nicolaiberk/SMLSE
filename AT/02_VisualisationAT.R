@@ -154,7 +154,7 @@ vp_est <- at_pt_my %>%
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
   ylab('SMLSE') +
-  ggtitle('Austria')
+  ggtitle('Similarity estimate ÖVP', subtitle = 'monthly average')
 
 ggsave('vis/AT_vp_est_poster.png', vp_est, height = 4, width = 20)
 ggsave('vis/AT_vp_est_presi.png', vp_est, height = 6, width = 10)
@@ -187,7 +187,7 @@ at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
 at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
 at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
 
-kurz_vp <- at_pt_my %>% 
+fp_est <- at_pt_my %>% 
   filter(party %in% c('ÖVP', 'SPÖ')) %>% 
   ggplot(aes(x = month, y = mean_rr, col=party, fill=party, ymin = ci_low_rr, ymax = ci_up_rr))+ 
   geom_line() +
@@ -209,8 +209,10 @@ kurz_vp <- at_pt_my %>%
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
   ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
 
-ggsave('vis/AT_kurz_vp_presi.png', fpvp, height = 6, width = 10)
-ggsave('vis/AT_kurz_vp_paper.png', fpvp, height = 4, width = 10)
+ggsave('vis/AT_kurz_fp_est_presi.png', fp_est, height = 6, width = 10)
+ggsave('vis/AT_kurz_fp_est_paper.png', fp_est, height = 4, width = 10)
+
+
 
 
 # B5: increase sim FP mit VP 2018
@@ -238,8 +240,8 @@ kurz_fp <- at_pt_my %>%
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
   ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
 
-ggsave('vis/AT_kurz_fp_presi.png', fpvp, height = 6, width = 10)
-ggsave('vis/AT_kurz_fp_paper.png', fpvp, height = 4, width = 10)
+ggsave('vis/AT_kurz_vp_est_presi.png', fpvp, height = 6, width = 10)
+ggsave('vis/AT_kurz_vp_est_paper.png', fpvp, height = 4, width = 10)
 
 kurz_comp <- gridExtra::grid.arrange(kurz_vp, kurz_fp)
 ggsave('vis/AT_kurz_comp.png', kurz_comp, height = 8, width = 10)
