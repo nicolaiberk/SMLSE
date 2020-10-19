@@ -135,7 +135,7 @@ party_dens_plot <- ggplot(nl, aes(x=RR_pred, y=family, fill = family)) +
   # geom_linerange(data=_pt, aes(xmin = ci_low, xmax = ci_up, y=family), inherit.aes = F)+
   scale_fill_manual(values=partycols)+
   xlab('SMLSE')
-ggsave('vis/nl_parties_density.png', party_dens_plot, width = 6, height=3)
+ggsave('vis/nl_parties_density.png', party_dens_plot, width = 8, height=5)
 
 
 
@@ -171,7 +171,7 @@ plot <-
   ylab('SMLSE')+
   # ggtitle('Quarterly mean SMLSE for Geert Wilders and Mark Rutte')+ 
   theme(legend.position="bottom", legend.title=element_blank())
-ggsave('vis/Wilders_Rutte.png', plot, width = 10, height = 4)
+ggsave('vis/Wilders_Rutte.png', plot, width = 6, height = 4)
 
 
 ## wilders compared to rest of VVD before 2. September 2004
@@ -193,7 +193,7 @@ vvd$highlight[grep(vvd$speaker, pattern = 'Oplaat')] <- 'c'
 vvd$highlight[grep(vvd$speaker, pattern = 'Rutte')] <- 'd'
 vvd$highlight[grep(vvd$speaker, pattern = 'Schultz')] <- 'd'
 
-vvd$speaker[grepl(vvd$speaker, patter = 'Schultz')] <- 'Schultz'
+vvd$speaker[grepl(vvd$speaker, pattern = 'Schultz')] <- 'Schultz'
 
 plot2 <- ggplot(vvd, aes(x = mean, xmin = ci_low, xmax = ci_up, y= reorder(speaker, -mean), col = highlight))+
   geom_pointrange(show.legend = F)+
@@ -202,10 +202,32 @@ plot2 <- ggplot(vvd, aes(x = mean, xmin = ci_low, xmax = ci_up, y= reorder(speak
   ylab('')
   # ggtitle("SMLSE for VVD members preceding Wilders' exit")
 
-ggsave('vis/Wilders_comp.png', plot2, width = 6, height = 6)
+ggsave('vis/Wilders_comp.png', plot2, width = 8, height = 5)
 
 
 gridExtra::grid.arrange(plot, plot2, nrow = 1) %>% 
   ggsave(filename = 'vis/Wilders_both.png', width = 12, height = 6)
 
+# with fewer speaker names
+vvd <- arrange(vvd, -mean)
+vvd$speaker_alt <- ""
+vvd$speaker_alt[vvd$speaker %in% c("Wilders", "Verdonk", 
+                                   "Oplaat", "Rutte", "Schultz")] <- 
+  vvd$speaker[vvd$speaker %in% c("Wilders", "Verdonk", 
+                                 "Oplaat", "Rutte", "Schultz")]
+
+
+plot2_r <- ggplot(vvd, aes(x = mean, xmin = ci_low, xmax = ci_up, 
+                         y= reorder(speaker, -mean), 
+                         col = highlight))+
+  geom_pointrange(show.legend = F)+
+  scale_y_discrete(labels = vvd$speaker_alt) +
+  scale_color_manual(values = c('gray', '#FF0000', '#FF9999', '#00BFC4'))+
+  xlab('SMLSE')+
+  ylab('')
+
+ggsave('vis/Wilders_comp_r.png', plot2_r, width = 8, height = 5)
+ggsave('vis/Wilders_comp_r_pres.png', plot2_r, width = 6, height = 4)
+gridExtra::grid.arrange(plot, plot2_r, nrow = 1) %>% 
+  ggsave(filename = 'vis/Wilders_both_r.png', width = 10, height = 5)
 
