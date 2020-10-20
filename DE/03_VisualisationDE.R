@@ -5,8 +5,15 @@ library(lubridate)
 library(boot)
 library(Hmisc)
 library(ggridges)
+library(extrafont)
+
 
 options(stringsAsFactors = FALSE)
+
+# import fonts (in case Verdana not loaded yet, run uncommented lines)
+font_import(pattern = '.*verdana.*', prompt = F)
+loadfonts(device = "win", quiet = T)
+windowsFonts(family = 'Verdana')
 
 # Import ####
 setwd("DE")
@@ -57,7 +64,7 @@ write.csv(file = 'smlse/DE_speakers.csv', x =  de_sp)
 speaker_plot <-
   ggplot(de_sp[de_sp$n_words>100,],aes(x=party, y=mean_w, fill=party, label = labels, col = labelcol)) + 
   geom_dotplot(binwidth=0.015, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F, stroke = 2.5)+
-  geom_text(aes(label=labels), col='black', position = 'identity', size = 5, vjust=-1) +
+  geom_text(aes(label=labels), col='black', position = 'identity', size = 5, vjust=-1, family = 'Verdana') +
   scale_fill_manual(values=partycols) +
   theme_minimal() +
   scale_color_manual(values=c('white', 'black')) +
@@ -66,8 +73,9 @@ speaker_plot <-
   theme(axis.text.x = element_text(color = "grey20", size = 12, angle = 0, hjust = .5, vjust = .5, face = "plain"),
          axis.text.y = element_text(color = "grey20", size = 12, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
          axis.title.x = element_text(color = "grey20", size = 12, angle = 0, hjust = .5, vjust = 0, face = "plain"),
-         axis.title.y = element_text(color = "grey20", size = 12, angle = 90, hjust = .5, vjust = .5, face = "plain")
-        )
+         axis.title.y = element_text(color = "grey20", size = 12, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        text = element_text(family='Verdana'))
+
 ggsave('vis/DE_speakers.png', speaker_plot, height = 7, width = 13)
 ggsave('vis/DE_speakers_pres.png', speaker_plot, height = 6, width = 10)
 
@@ -89,7 +97,9 @@ party_plot <- ggplot(de_pt, aes(x=mean_w, y=party, xmin = ci_low, xmax = ci_up, 
   geom_linerange(size = 1, show.legend = F) +
   scale_color_manual(values=partycols) +
   scale_y_discrete(limits=rev(c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent")))+
-  xlab('SMLSE')
+  xlab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/DE_parties_mean.png', party_plot, width = 6, height=3)
 
 
@@ -99,6 +109,7 @@ party_dens_plot <- ggplot(de, aes(x=afd_pred, y=party, fill = party)) +
   geom_point(data=de_pt, aes(x = mean_w, y=party), show.legend = F)+
   geom_linerange(data=de_pt, aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
   scale_fill_manual(values=partycols)+
-  xlab('SMLSE')
-ggsave('vis/DE_parties_density.png', party_dens_plot, width = 6, height=3)
+  xlab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
 
+ggsave('vis/DE_parties_density.png', party_dens_plot, width = 6, height=3)

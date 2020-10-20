@@ -6,12 +6,20 @@ library(psych)
 library(Hmisc)
 # library(BBmisc)
 library(RColorBrewer)
+library(extrafont)
+
+setwd('DE')
+
+# import fonts
+font_import(pattern = '.*verdana.*', prompt = F)
+loadfonts(device = "win", quiet = T)
+windowsFonts(family = 'Verdana')
 
 
 # load similarity scores
-cosine_sim <- read.csv('DE/sims/DE_similarities.csv')
-smlse_1000 <- read.csv('DE/smlse/DE_smlse1000.csv')
-wordfish <- read.csv('DE/sims/DE_wordfish.csv')
+cosine_sim <- read.csv('sims/DE_similarities.csv')
+smlse_1000 <- read.csv('smlse/DE_smlse1000.csv')
+wordfish <- read.csv('sims/DE_wordfish.csv')
 
 
 cor(cosine_sim$n_words_raw, cosine_sim$cosine_sim) # 0.87 - mainly higher scores due to higher likelihood of words to be included - report
@@ -117,7 +125,8 @@ df %>% ggplot() +
                      # , breaks=c(0,-1,-2,-3), labels = c('SMLSE', 'SMLSE (subset)', 'Wordfish', 'Cosine Similarity')
                      ) + 
   scale_color_discrete(name = "", labels = c("SMLSE", "SMLSE (subset)", "Wordfish", "Cosine similarity"))+
-  scale_x_continuous(name = 'Normalized estimate', limits = c(-1,3))
+  scale_x_continuous(name = 'Normalized estimate', limits = c(-1,3)) +
+  theme(text = element_text(family='Verdana'))
 
 
 # plot per measure
@@ -125,28 +134,32 @@ p0 <- ggplot(df) +
   geom_point(aes(x=mean_est, y=party, col = party)) +
   geom_linerange(aes(xmin = ci_low_est, xmax = ci_up_est, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('SMLSE') + scale_color_manual(values=partycols) +
-  theme(legend.position = 'none') # + xlim(c(0,1))
+  theme(legend.position = 'none',
+        text = element_text(family='Verdana')) # + xlim(c(0,1))
 
 p1 <- ggplot(df) + 
   geom_point(aes(x=mean_1000, y=party, col = party)) +
   geom_linerange(aes(xmin = ci_low_1000, xmax = ci_up_1000, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('SMLSE (restricted model)') + scale_color_manual(values=partycols) +
-  theme(legend.position = 'none') # + xlim(c(0,1))
+  theme(legend.position = 'none',
+        text = element_text(family='Verdana')) # + xlim(c(0,1))
 
 p2 <- ggplot(df) + 
   geom_point(aes(x=-wf, y=party, col = party)) +
   geom_linerange(aes(xmin = -wf_ci_low, xmax = -wf_ci_up, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('Wordfish') + scale_color_manual(values=partycols) +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(family='Verdana'))
 
 p3 <- ggplot(df) + 
   geom_point(aes(x=mean_cs, y=party, col = party)) +
   geom_linerange(aes(xmin = ci_low_cs, xmax = ci_up_cs, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('Cosine similarity') + scale_color_manual(values=partycols) +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(family='Verdana'))
 
 
-gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'DE/vis/similarity_pts.jpg', height = 6, width = 8)
-gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'DE/vis/similarity_pts_presi.jpg', height = 5, width = 7)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts.jpg', height = 6, width = 8)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts_presi.jpg', height = 5, width = 7)
 
 

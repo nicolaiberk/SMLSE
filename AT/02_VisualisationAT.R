@@ -6,8 +6,14 @@ library(lubridate)
 library(boot)
 library(Hmisc)
 library(ggridges)
+library(extrafont)
 
 options(stringsAsFactors = FALSE)
+
+# import fonts
+font_import(pattern = '.*verdana.*', prompt = F)
+loadfonts(device = "win", quiet = T)
+windowsFonts(family = 'Verdana')
 
 setwd('AT')
 
@@ -45,7 +51,8 @@ fpvp <- at_pt_my %>%
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
   ylab('SMLSE') +
-  ggtitle('Austria')
+  ggtitle('Austria') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_fpvp_poster.png', fpvp, height = 4, width = 20)
 ggsave('vis/AT_fpvp_presi.png', fpvp, height = 6, width = 10)
@@ -78,7 +85,9 @@ party_dens_plot <- ggplot(at, aes(x=RR_pred, y=party, fill = party)) +
   geom_point(data=at_pt, aes(x = mean_rr, y=party), show.legend = F)+
   # geom_linerange(data=at_pt, aes(xmin = ci_low, xmax = ci_up, y=party), inherit.aes = F)+
   scale_fill_manual(values=partycols)+
-  xlab('SMLSE')
+  xlab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/AT_parties_density.png', party_dens_plot, width = 6, height=3)
 
 
@@ -96,7 +105,8 @@ fpvpbz <- at_pt_my %>%
   scale_color_manual(values=c('orange', 'blue', 'black')) +
   scale_fill_manual(values=c('orange', 'blue', 'black'))+
   ylab('SMLSE') +
-  ggtitle('Austria')
+  ggtitle('Austria') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_fpvpbz_paper.png', fpvpbz, height = 4, width = 10)
 
@@ -124,7 +134,8 @@ fpvp_fp <- at_pt_my_fp %>%
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
   ylab('SMLSE') +
-  ggtitle('Austria')
+  ggtitle('Austria') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_fpvp_fpest_paper.png', fpvp_fp, height = 4, width = 10)
 
@@ -154,7 +165,8 @@ vp_est <- at_pt_my %>%
   scale_color_manual(values=c('blue', 'black')) +
   scale_fill_manual(values=c('blue', 'black'))+
   ylab('SMLSE') +
-  ggtitle('Similarity estimate ÖVP', subtitle = 'monthly average')
+  ggtitle('Similarity estimate ÖVP', subtitle = 'monthly average') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_vp_est_poster.png', vp_est, height = 4, width = 20)
 ggsave('vis/AT_vp_est_presi.png', vp_est, height = 6, width = 10)
@@ -201,13 +213,14 @@ kurz_vp <- at_pt_my %>%
              aes(x =election, y = 0.325)) +
   geom_label(inherit.aes = F,
              label = 'Coalition\nFormation',
-             aes(x =coalition, y = 0.4)) +
+             aes(x =coalition, y = 0.45)) +
   scale_color_manual(values=c('black', 'red')) +
   scale_fill_manual(values=c('black', 'red')) +
   ylab('SMLSE') +
   coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
-  ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+  ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_kurz_fp_est_presi.png', kurz_vp, height = 6, width = 10)
 ggsave('vis/AT_kurz_fp_est_paper.png', kurz_vp, height = 4, width = 10)
@@ -232,13 +245,15 @@ kurz_fp <- at_pt_my %>%
             aes(x =election, y = 0.05)) +
   geom_label(inherit.aes = F,
             label = 'Coalition\nFormation',
-            aes(x =coalition, y = 0.45)) +
+            aes(x =coalition, y = 0.45), 
+            nudge_x = 15) +
   scale_color_manual(values=c('blue', 'red')) +
   scale_fill_manual(values=c('blue', 'red')) +
   ylab('SMLSE') +
   coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
-  ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+  ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_kurz_vp_est_presi.png', fpvp, height = 6, width = 10)
 ggsave('vis/AT_kurz_vp_est_paper.png', fpvp, height = 4, width = 10)
@@ -269,6 +284,7 @@ kurz_sp <- at_pt_my %>%
   ylab('SMLSE') +
   coord_cartesian(ylim = c(0,0.5)) +
   xlim(c(as.Date(x = '2016-12-31'), as.Date(x = '2018-07-01'))) +
-  ggtitle('Development of SPÖ similarity', subtitle = 'Monthly average, 1.1.2017-1.7.2018')
+  ggtitle('Development of SPÖ similarity', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/AT_kurz_sp.png', kurz_sp, height = 4, width = 10)

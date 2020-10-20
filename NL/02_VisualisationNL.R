@@ -6,6 +6,14 @@ library(lubridate)
 library(boot)
 library(Hmisc)
 library(ggridges)
+library(extrafont)
+
+setwd('NL')
+
+# import fonts
+font_import(pattern = '.*verdana.*', prompt = F)
+loadfonts(device = "win", quiet = T)
+windowsFonts(family = 'Verdana')
 
 options(stringsAsFactors = FALSE)
 
@@ -46,7 +54,8 @@ nl_fam_my <- nl_pt %>%
   scale_color_manual(values=partycols)+
   geom_line()+
   xlab(label = '')+
-  ylab('SMLSE')
+  ylab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/nl_families_monthly.png', nl_fam_my)
 
@@ -82,7 +91,8 @@ nl_vvd_my <- nl_pt %>%
   scale_color_manual(values=partycols)+
   xlab(label = '')+
   ylab('SMLSE')+
-  ggtitle('The Netherlands')
+  ggtitle('The Netherlands') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/nl_vvd_rr_poster.png', nl_vvd_my, height = 4, width = 20)
 ggsave('vis/nl_vvd_rr_presi.png', nl_vvd_my, height = 6, width = 10)
@@ -103,7 +113,9 @@ nl_full_my <- nl_pt %>%
   scale_fill_manual(values=partycols)+
   scale_color_manual(values=partycols)+
   xlab(label = '')+
-  ylab('SMLSE')
+  ylab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/nl_vvd_cda_rr.png', nl_full_my, height = 4, width = 10)
 
 
@@ -124,7 +136,9 @@ party_plot <- ggplot(nl_pt, aes(x=mean_w, y=family, xmin = ci_low, xmax = ci_up,
   geom_point(show.legend = F, size = 2) + 
   geom_linerange(size = 1, show.legend = F) +
   scale_color_manual(values=partycols)+
-  xlab('SMLSE')
+  xlab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/nl_parties_point.png', party_plot, width = 6, height=3)
 
 
@@ -134,7 +148,9 @@ party_dens_plot <- ggplot(nl, aes(x=RR_pred, y=family, fill = family)) +
   geom_point(data=nl_pt, aes(x = mean_w, y=family), show.legend = F)+
   # geom_linerange(data=_pt, aes(xmin = ci_low, xmax = ci_up, y=family), inherit.aes = F)+
   scale_fill_manual(values=partycols)+
-  xlab('SMLSE')
+  xlab('SMLSE') +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/nl_parties_density.png', party_dens_plot, width = 8, height=5)
 
 
@@ -170,7 +186,9 @@ plot <-
   ylim(c(-0.10, 0.4))+
   ylab('SMLSE')+
   # ggtitle('Quarterly mean SMLSE for Geert Wilders and Mark Rutte')+ 
-  theme(legend.position="bottom", legend.title=element_blank())
+  theme(legend.position="bottom", legend.title=element_blank()) +
+  theme(text = element_text(family='Verdana'))
+
 ggsave('vis/Wilders_Rutte.png', plot, width = 6, height = 4)
 
 
@@ -199,7 +217,9 @@ plot2 <- ggplot(vvd, aes(x = mean, xmin = ci_low, xmax = ci_up, y= reorder(speak
   geom_pointrange(show.legend = F)+
   scale_color_manual(values = c('gray', '#FF0000', '#FF9999', '#00BFC4'))+
   xlab('SMLSE')+
-  ylab('')
+  ylab('') +
+  theme(text = element_text(family='Verdana'))
+
   # ggtitle("SMLSE for VVD members preceding Wilders' exit")
 
 ggsave('vis/Wilders_comp.png', plot2, width = 8, height = 5)
@@ -224,7 +244,8 @@ plot2_r <- ggplot(vvd, aes(x = mean, xmin = ci_low, xmax = ci_up,
   scale_y_discrete(labels = vvd$speaker_alt) +
   scale_color_manual(values = c('gray', '#FF0000', '#FF9999', '#00BFC4'))+
   xlab('SMLSE')+
-  ylab('')
+  ylab('') +
+  theme(text = element_text(family='Verdana'))
 
 ggsave('vis/Wilders_comp_r.png', plot2_r, width = 8, height = 5)
 ggsave('vis/Wilders_comp_r_pres.png', plot2_r, width = 6, height = 4)
