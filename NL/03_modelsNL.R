@@ -2,6 +2,8 @@ library(dplyr)
 library(lubridate)
 library(Hmisc)
 
+
+
 pps_nl <- read.csv('smlse/NL_notext.csv')
 pps_nl$my <- floor_date(as.Date(pps_nl$date, format = '%Y-%m-%d'), "month")
 
