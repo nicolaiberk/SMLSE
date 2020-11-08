@@ -22,3 +22,10 @@ NL/raw
 NL/processed/TweedeKamer_cleaned.csv
 NL/.ipynb_checkpoints
 NL/smlse
+main.run.xml
+main.aux
+main.bbl
+main.bcf
+main.log
+main.blg
+main.out
