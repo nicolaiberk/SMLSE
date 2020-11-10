@@ -27,36 +27,89 @@ partycols=c("lightblue", "blue", "green", 'yellow', 'magenta', 'black', 'red')
 
 
 ## aggregate per month and party 
-at$my <- floor_date(at$date, "month")
+at$my <- floor_date(at$date, "quarterly")
 
 at_pt_my <- at %>% 
   group_by(party, my) %>% 
   summarise(mean_rr = wtd.mean(x=RR_pred, w=n_words),
             sd_rr = sqrt(wtd.var(x=RR_pred, weights = n_words)),
+            mean_vp = wtd.mean(x=ÖVP_pred, w=n_words),
+            sd_vp = sqrt(wtd.var(x=ÖVP_pred, weights = n_words)),
+            mean_sp = wtd.mean(x=SPÖ_pred, w=n_words),
+            sd_sp = sqrt(wtd.var(x=SPÖ_pred, weights = n_words)),
+            mean_fp = wtd.mean(x=FPÖ_pred, w=n_words),
+            sd_fp = sqrt(wtd.var(x=FPÖ_pred, weights = n_words)),
+            mean_bz = wtd.mean(x=BZÖ_pred, w=n_words),
+            sd_bz = sqrt(wtd.var(x=BZÖ_pred, weights = n_words)),
             n_speeches = length(RR_pred))
 
-at_pt_my$se <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low <- at_pt_my$mean_rr - 1.96*at_pt_my$se
-at_pt_my$ci_up <- at_pt_my$mean_rr + 1.96*at_pt_my$se
+at_pt_my$se_rr <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_rr <- at_pt_my$mean_rr - 1.96*at_pt_my$se_rr
+at_pt_my$ci_up_rr <- at_pt_my$mean_rr + 1.96*at_pt_my$se_rr
+
+at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
+at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
+
+at_pt_my$se_sp <- at_pt_my$sd_sp/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_sp <- at_pt_my$mean_sp - 1.96*at_pt_my$se_sp
+at_pt_my$ci_up_sp <- at_pt_my$mean_sp + 1.96*at_pt_my$se_sp
+
+at_pt_my$se_fp <- at_pt_my$sd_fp/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_fp <- at_pt_my$mean_fp - 1.96*at_pt_my$se_fp
+at_pt_my$ci_up_fp <- at_pt_my$mean_fp + 1.96*at_pt_my$se_fp
+
+at_pt_my$se_bz <- at_pt_my$sd_bz/sqrt(at_pt_my$n_speeches)
+at_pt_my$ci_low_bz <- at_pt_my$mean_bz - 1.96*at_pt_my$se_bz
+at_pt_my$ci_up_bz <- at_pt_my$mean_bz + 1.96*at_pt_my$se_bz
 
 
 # plot
-fpvp <- at_pt_my %>% 
-  filter(party %in% c('FPÖ', 'ÖVP')) %>% 
-  ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
-  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
-  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
-  geom_line() +
-  geom_ribbon(alpha=0.2) +
-  scale_color_manual(values=c('blue', 'black')) +
-  scale_fill_manual(values=c('blue', 'black'))+
-  ylab('SMLSE') +
-  ggtitle('Austria') +
-  theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_fpvp_poster.png', fpvp, height = 4, width = 20)
-ggsave('vis/AT_fpvp_presi.png', fpvp, height = 6, width = 10)
-ggsave('vis/AT_fpvp_paper.png', fpvp, height = 4, width = 10)
+## ÖVP
+vp_dta <- at_pt_my %>% 
+  filter(party %in% c('ÖVP'))
+  
+vp <- ggplot(vp_dta, aes(x = my))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
+  # geom_vline(xintercept = as.Date(x = c('28.2.2003'), format = '%d.%m.%Y')) +
+  geom_line(aes(y = vp_dta$mean_rr, col = 'FPÖ')) +
+  geom_line(aes(y = vp_dta$mean_sp, col = 'SPÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ', col = 'FPÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_sp, ymax = vp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
+  ylab('Similarity') +
+  ggtitle('Quarterly similarity estimates of centre-right ÖVP to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
+  theme(text = element_text(family='Verdana')) +
+  scale_color_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red')) +
+  scale_fill_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red'))
+
+ggsave('vis/AT_vp_poster.png', vp, height = 4, width = 20)
+ggsave('vis/AT_vp_presi.png', vp, height = 6, width = 10)
+ggsave('vis/AT_vp_paper.png', vp, height = 4, width = 10)
+
+
+## FPÖ
+fp_dta <- at_pt_my %>% 
+  filter(party %in% c('FPÖ'))
+
+fp <- ggplot(fp_dta, aes(x = my))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
+  # geom_vline(xintercept = as.Date(x = c('28.2.2003'), format = '%d.%m.%Y')) +
+  geom_line(aes(y = fp_dta$mean_vp, col = 'ÖVP')) +
+  geom_line(aes(y = fp_dta$mean_sp, col = 'SPÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_vp, ymax = fp_dta$ci_up_vp, fill = 'ÖVP', col = 'ÖVP')) +
+  geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_sp, ymax = fp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
+  ylab('Similarity') +
+  ggtitle('Quarterly similarity estimates of radical-right FPÖ to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
+  theme(text = element_text(family='Verdana')) +
+  scale_color_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red')) +
+  scale_fill_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red'))
+
+ggsave('vis/AT_fp_poster.png', fp, height = 4, width = 20)
+ggsave('vis/AT_fp_presi.png', fp, height = 6, width = 10)
+ggsave('vis/AT_fp_paper.png', fp, height = 4, width = 10)
 
 
 
