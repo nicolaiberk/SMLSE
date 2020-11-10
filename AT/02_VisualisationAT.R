@@ -78,7 +78,7 @@ vp <- ggplot(vp_dta, aes(x = my))+
   geom_line(aes(y = vp_dta$mean_sp, col = 'SPÖ')) +
   geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ', col = 'FPÖ')) +
   geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_sp, ymax = vp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
-  ylab('Similarity') +
+  ylab('Similarity') + xlab('') +
   ggtitle('Quarterly similarity estimates of centre-right ÖVP to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
   theme(text = element_text(family='Verdana')) +
   scale_color_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red')) +
@@ -101,7 +101,7 @@ fp <- ggplot(fp_dta, aes(x = my))+
   geom_line(aes(y = fp_dta$mean_sp, col = 'SPÖ')) +
   geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_vp, ymax = fp_dta$ci_up_vp, fill = 'ÖVP', col = 'ÖVP')) +
   geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_sp, ymax = fp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
-  ylab('Similarity') +
+  ylab('Similarity') + xlab('') +
   ggtitle('Quarterly similarity estimates of radical-right FPÖ to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
   theme(text = element_text(family='Verdana')) +
   scale_color_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red')) +
