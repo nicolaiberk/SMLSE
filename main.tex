@@ -6,6 +6,8 @@
 \usepackage[colorlinks = false]{hyperref}
 \usepackage[table]{xcolor}
 \usepackage{rotating}
+\usepackage{adjustbox}
+
 
 \usepackage[TS1,T1]{fontenc}
 
@@ -94,7 +96,8 @@ The list below outlines the application procedure. It should help readers unders
 
 \begin{enumerate}
     \item \textbf{Select a Classifier} \newline Although the similarities are only interpretable relative to other estimates, it is desirable to use a classifier that is able to distinguish well between the labels in order to extract meaningful information. To that end, one should compare the performance of a number of pre-processing steps and classifiers before deciding which to use. Following \citeauthor{Peterson2018}, I do not remove stopwords from a pre-defined list but very frequent as well as rare terms to avoid overfitting \citeyear{Peterson2018}. This is more context-specific and should thus also be more neutral in its impact (see \cite{Schoonvelde2019a} for a discussion of this issue). Beyond that, the researcher should compare the performance of classifiers when using stemmed and unstemmed text, raw term counts and counts weighted by overall document frequency (tf-idf), as well as different classification algorithms (\cite{Denny2018}).\par 
-    Training classifiers several times on subsets of the data and assessing average performance\footnote{Note that I deviate from \citeauthor{Peterson2018} by training one classifier per country instead of per session to maintain maximal comparability between the estimates (\citeyear{Peterson2018}). This is also in line with the idea that pre-processing steps such as stemming should be either relevant or not relevant, depending on the language of the speeches, but not the particular period assessed.} (cross-validation) minimises the risk of overfitting in the selection process (\cite{Breiman1989}). This is especially relevant as textual data suffers from finite-sample bias, meaning the speakers can only choose so many words from a huge dictionary of possible words. This bias might result in the over-estimation of partisan differences simply due to chance\footnote{Three steps are taken to reduce this problem: first, a bag-of-words approach is used (whereas \citeauthor{Gentzkow2019} used bi-grams), severely de-creasing the feature space. Second, the five-fold cross-validation makes sure a classifier that performs well on different subsets of data is selected, thus reducing the chance to overfit. Third, very rare terms (being used in less than five speeches within a period) are excluded, thus again reducing the likelihood that certain rare words discriminate between the parties just by chance.} (\cite{Gentzkow2019}).  \par
+    Training classifiers several times on subsets of the data and assessing average performance (cross-validation) minimises the risk of overfitting in the selection process (\cite{Breiman1989}). This is especially relevant as textual data suffers from finite-sample bias, meaning the speakers can only choose so many words from a huge dictionary of possible words. This bias might result in the over-estimation of partisan differences simply due to chance\footnote{Three steps are taken to reduce this problem: first, a bag-of-words approach is used (whereas \citeauthor{Gentzkow2019} used bi-grams), severely de-creasing the feature space. Second, the five-fold cross-validation makes sure a classifier that performs well on different subsets of data is selected, thus reducing the chance to overfit. Third, very rare terms (being used in less than five speeches within a period) are excluded, thus again reducing the likelihood that certain rare words discriminate between the parties just by chance.} (\cite{Gentzkow2019}).  \par
+    Deviating from \citeauthor{Peterson2018}, I select a classifier once and apply it to the entire data. As these authors have shown, one can barely distinguish results from different classifiers (see Appendix D). My approach values the relative comparability of the estimates over the slight improve in predictive performance. The latter has little use for this descriptive application of supervised learning. \par
     \item \textbf{Balance the data} \newline Classifiers perform sub-optimal on imbalanced data. This could result in better performance for larger sets and worse performance for smaller sets of documents, rendering the latter documents more similar than they actually are. To avoid this, the data must be weighted. The final training set then contains half of speeches carrying the label of interest. This is additionally important if similarities of different subgroups should be compared. Then all subgroups should be weighted such that they represent equal shares and the label of interest contributes 50\% of all data.  \par
     \item (if necessary) \textbf{Divide the data into time-periods} \newline Sometimes, researchers might want to assess similarities across time. However, the use and meaning of words change across time. To address this issue, the data can be divided into subsets across time (e.g. a legislative session or presidential term). Training one classifier per time-period controls for changing language.\par
     \item \textbf{Fit the classifier(s) and estimate predicted probabilities} \newline The selected classifier is fitted to the over-sampled data (think of a regression where each word is an independent variable predicting the label, e.g. party membership of the speaker), returning coefficients\footnote{Note that many classifiers do not return coefficients nor use regression. This example was chosen for its perspicuity.} for each word based on the correlation with the label of interest (e.g. radical-right authorship). Using this classifier, predicted probabilities are estimated for each speech. The higher the likelihood estimated, the more similar the word use in the document to the word use in documents carrying the label of interest. Hence the estimated likelihood that a document belongs to this corpus is inherently a similarity score.\par 
@@ -103,13 +106,13 @@ The list below outlines the application procedure. It should help readers unders
 
 
 \section{Empirical data}
-To demonstrate the application and validity of SMLSE, I employ the ParlSpeech dataset of parliamentary speeches (\cite{Rauh2020}) to study the rhetorical similarities of parties and speakers with the radical-right. The accommodation of radical-right parties by mainstream parties has inspired a vast literature and constitutes a major area of research on party competition (see e.g. \cite{Arzheimer2009, Bale2010e, Dahlstrom2012a, Harmel1997a, Krause2019accomodation, Meguid2005, Schumacher2014a, Spoon2020a, VanDerBrug2005b, VanSpanje2010, Wagner2017}). I selected the cases of the Austrian \textit{Nationalrat}, Germany's \textit{Bundestag}, and the \textit{Tweede Kamer} of the Netherlands. The Dutch and Austrian case allow me to make a historical assessment of the similarity of mainstream parties and speakers to the radical-right, as their party systems include radical-right parties for at least the past twenty years. Germany, on the other hand, has only recently witnessed the rise of the radical-right, but represents a much-studied case (see \cite{Arzheimer2019}: 2-5 for a review).\par
+To demonstrate the application and validity of these similarity estimates, I employ the ParlSpeech dataset of parliamentary speeches (\cite{Rauh2020}) to study the rhetorical similarities of parties and speakers with the radical-right. The accommodation of radical-right parties by mainstream parties has inspired a vast literature and constitutes a major area of research on party competition (see e.g. \cite{Arzheimer2009, Bale2010e, Dahlstrom2012a, Harmel1997a, Krause2019accomodation, Meguid2005, Schumacher2014a, Spoon2020a, VanDerBrug2005b, VanSpanje2010, Wagner2017}). I selected the cases of the Austrian \textit{Nationalrat}, Germany's \textit{Bundestag}, and the \textit{Tweede Kamer} of the Netherlands. The Dutch and Austrian case allow me to make a historical assessment of the similarity of mainstream parties and speakers to the radical-right, as their party systems include radical-right parties for at least the past twenty years. Germany, on the other hand, has only recently witnessed the rise of the radical-right, but represents a much-studied case (see \cite{Arzheimer2019}: 2-5 for a review).\par
 
-Using python’s scikit-learn-package (\cite{Pedregosa2011}), I develop a classifier to estimate whether a text is authored by a radical-right party (Germany: AfD; Austria: FPÖ, BZÖ; Netherlands: LPF, PVV, FvD). I use the German data for classifier selection. After removing very infrequent and very frequent terms as well as punctuation from the texts, I train three different models (Logistic Regression, Multinomial Naïve Bayes, Support Vector Machine) on stemmed and un-stemmed text, quantified as either raw document counts, or weighted by the terms' inverse frequency across documents. This results in 3x2x2 = 12 different classifiers. I use five-fold cross-validation to choose a classifier that performs well. The logistic regression on inverse-document-frequency-weighted un-stemmed texts produces the most desirable results (accuracy: 0.89, recall: 0.59, precision: 0.62) and is hence chosen as the classifier of interest for all applications (see table \ref{tab:perf} in appendix A for a comparison of the classifier performances). Bi- and tri-grams did not substantially affect these estimates nor improve interpretability of the best predictors and were hence excluded of the analysis. The training data was over-sampled using the SMOTE-algorithm from the \texttt{imblearn}-package (\cite{Lemaitre2017})\footnote{The synthetic minority oversampling technique (SMOTE) uses a 'nearest-neighbour'-approach to generate additional, synthetic cases. This method performs superior to other methods of balancing data (\cite{Chawla2002}).}. For the classification of Austrian and Dutch speeches, I train one classifier per legislative session, thus controlling for changing language across time. The German parliament saw the re-emergence of the radical-right only in 2017, therefore only one classifier is trained for this data (which ends in December 2018). \par
+Using the \texttt{Scikit-Learn} package for python (\cite{Pedregosa2011}), I develop a classifier to estimate whether a text is authored by a radical-right party (Germany: AfD; Austria: FPÖ, BZÖ; Netherlands: LPF, PVV, FvD). I use the German data for classifier selection. After removing very infrequent and very frequent terms as well as punctuation from the texts, I train three different models (Logistic Regression, Multinomial Naïve Bayes, Support Vector Machine) on stemmed and un-stemmed text, quantified as either raw document counts, or weighted by the terms' inverse frequency across documents. This results in 3x2x2 = 12 different classifiers. I use five-fold cross-validation to choose a classifier that performs well. The logistic regression on inverse-document-frequency-weighted un-stemmed texts produces the most desirable results (predicting single speeches: F1 = 0.59, accuracy: 0.87, recall: 0.59\footnote{Note that only just below 15\% of speeches were AfD speeches.}, precision: 0.62) and is hence chosen as the classifier of interest for all applications (see appendix A for a comparison of the classifier performances). Bi- and tri-grams did not substantially affect these estimates nor improve interpretability of the best predictors and were hence excluded of the analysis. The training data was over-sampled using the SMOTE-algorithm from the \texttt{imblearn}-package (\cite{Lemaitre2017})\footnote{The synthetic minority oversampling technique (SMOTE) uses a 'nearest-neighbour'-approach to generate additional, synthetic cases. This method performs superior to other methods of balancing data (\cite{Chawla2002}).}. For the classification of Austrian and Dutch speeches, I train one classifier per legislative session, thus controlling for changing language across time. The German parliament saw the re-emergence of the radical-right only in 2017, therefore only one classifier is trained for this data (which ends in December 2018). \par
 
 
 \section{Validity}
-The measure displays criterion-related validity by identifying the outcome category (radical-right authorship) with 89\% accuracy. I will address two other types of validity in the next section. First, I assess the best predictor words of the classifiers in the most recent parliamentary session in Austria, Germany, and the Netherlands. I highlight the content validity of the measure by showing which features the classifier discriminates on. Construct validity, i.e. the "extent to which a measure performs according to theoretical expectations" (\cite{Carmines2004Validity}), is shown presenting four cases where the method provides valid estimates of parties' and speakers' similarity to the radical-right. \par
+After preparing the similarity estimates as described, I assess their validity using three major tests. First, I assess the correspondence of the measure to the underlying construct of 'party-ness' (content validity) by assessing the best predictor words distinguishing the respective radical right party from all parties in that party system. Subsequently, I will use data from the Netherlands and Austria to show that radical-right centre-right parties become more similar when governing together. After that, I will turn to individual estimates of speakers and assess whether the classifier places individuals that exited the radical right party in Germany differently. The last case examines the tranformation of Geert Wilders, a former member of the liberal party in the Netherlands, who left his party to from a radical right party. The estimates perform according to expectations in all cases and thus strongly corroborate the validity of the method.\par
 
 
 
@@ -117,75 +120,75 @@ The measure displays criterion-related validity by identifying the outcome categ
 
 Radical-right parties are usually defined based on their distinctive policy positions. These parties are nationalist and hold especially conservative cultural and authoritarian positions. Additionally, they often communicate with populist rhetoric, including anti-elitism and people-centrism (\cite{Mudde2007}). Table \ref{tab:bpws} shows the words most positively (red) and negatively (blue) correlated with radical-right authorship. These words are the best predictors to distinguish the radical-right parties (FPÖ; AfD; PVV/FvD) in the most recent legislative period in the data (ending in Dec 2018 in DE \& AT, Jul 2019 in NL), out of all words in the model. \par
 
-Considerable differences exist in the rhetoric distinguishing radical-right parties in these three countries. The AfD in Germany is foremost distinguished by its aversion to gender-inclusive language, which the party criticises as ‘gender-madness’\footnote{See \url{https://afdkompakt.de/tag/genderwahn/}}. It also displays heightened reference to itself, Germany (in line with its nationalist ideology), and the government (being the largest opposition party), compared to other parties. Its members address the parliament with ‘ladies and gentlemen’, not the male and female forms of ‘colleagues’. Using causal adverbs ('therefore', 'hence') and referring to ‘democrats’ is also less found in AfD-authored speeches. These findings also caution against a one-size-fits-all approach to pre-processing, as the rejection of gendered nouns would have remained hidden had I stemmed the words. \par
+Considerable differences exist in the rhetoric distinguishing radical-right parties in these three countries. The AfD in Germany is foremost distinguished by its aversion to gender-inclusive language, which the party criticises as ‘gender-madness’\footnote{See \url{https://afdkompakt.de/tag/genderwahn/}}. It also displays heightened reference to itself, Germany (in line with its nationalist ideology), and the government (being the largest opposition party), compared to other parties. Its members address the parliament with ‘ladies and gentlemen’, not the male and female forms of ‘colleagues’. Using causal adverbs ('therefore', 'hence')\footnote{This is particularly interesting, as such cognitive language seems to correlate with a number of psychological features, such as analytic thinking, memory, and the ability to cope with trauma  (\cite{Pennebaker2003, Pennebaker2011}).} and referring to ‘democrats’ is also less found in AfD-authored speeches. \par
 
 \begin{table}[ht!]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Germany}                         & \textbf{Austria}            & \textbf{The Netherlands} \\ \hline
-\rowcolor[HTML]{F8766D} 
-citizen/s {[}m{]}                        & SPÖ                         & immigration              \\ \hline
-\rowcolor[HTML]{F8766D} 
-Merkel                                   & [Intercept]                 & and so on                \\ \hline
-\rowcolor[HTML]{F8766D} 
-german                                   & honoured                    & Islam                    \\ \hline
-\rowcolor[HTML]{F8766D} 
-AfD                                      & gentlemen                   & PVV                      \\ \hline
-\rowcolor[HTML]{F8766D} 
-Germany                                  & ladies                      & Islamic                  \\ \hline
-\rowcolor[HTML]{F8766D} 
-old-parties                              & Vienna                      & Brussels                 \\ \hline
-\rowcolor[HTML]{F8766D} 
-here                                     & to                          & possible                 \\ \hline
-\rowcolor[HTML]{F8766D} 
-government                               & opposition                  & immigration policy       \\ \hline
-\rowcolor[HTML]{F8766D} 
-much                                     & once                        & illegal immigrants       \\ \hline
-\rowcolor[HTML]{F8766D} 
-thanks                                   & sector                      & hate-speech paragraph    \\ \hline
-\rowcolor[HTML]{F8766D} 
-ladies                                   & patients {[}m{]}            & sign                     \\ \hline
-\rowcolor[HTML]{F8766D} 
-thank you                                & take                        & animal police            \\ \hline
-\rowcolor[HTML]{F8766D} 
-gentlemen                                & just/exactly                & house-keeping            \\ \hline
-\rowcolor[HTML]{F8766D} 
-employees                                & colleague  {[}f{]}                 & gigantic                 \\ \hline
-\rowcolor[HTML]{F8766D} 
-\cellcolor[HTML]{00BFC4}soldiers {[}f{]} & patients {[}f{]}            & discount                 \\ \hline
-\rowcolor[HTML]{F8766D} 
-\cellcolor[HTML]{00BFC4}state secretary  & Stöger (SPÖ)                & bene                     \\ \hline
-\rowcolor[HTML]{F8766D} 
-\cellcolor[HTML]{00BFC4}warmly           & must                        & status holders           \\ \hline
-\rowcolor[HTML]{F8766D} 
-\cellcolor[HTML]{00BFC4}important        & Kern (SPÖ)                  & heaven’s sake            \\ \hline
+\rowcolor[HTML]{c41200} 
+citizen/s {[}m{]}                        & honoured                    & immigration              \\ \hline
+\rowcolor[HTML]{c41200} 
+Merkel                                   & SPÖ                         & and so on                \\ \hline
+\rowcolor[HTML]{c41200} 
+german                                   & once                        & Islam                    \\ \hline
+\rowcolor[HTML]{c41200} 
+AfD                                      & patients  {[}m{]}           & PVV                      \\ \hline
+\rowcolor[HTML]{c41200} 
+Germany                                  & colleague {[}f{]}           & Islamic                  \\ \hline
+\rowcolor[HTML]{c41200} 
+old-parties                              & just {[}temporal{]}/precisely & Brussels                 \\ \hline
+\rowcolor[HTML]{c41200} 
+here                                     & Hohes {[}as in 'Hohes Haus'{]} & possible                 \\ \hline
+\rowcolor[HTML]{c41200} 
+government                               & years                       & immigration policy       \\ \hline
+\rowcolor[HTML]{c41200} 
+much                                     & population                  & illegal immigrants       \\ \hline
+\rowcolor[HTML]{c41200} 
+thanks                                   & Social Democracy            & hate-speech paragraph    \\ \hline
+\rowcolor[HTML]{c41200} 
+ladies                                   & appropriate                 & sign                     \\ \hline
+\rowcolor[HTML]{c41200} 
+thank you                                & Kern (SPÖ)                  & animal police            \\ \hline
+\rowcolor[HTML]{c41200} 
+gentlemen                                & Pilz                        & house-keeping            \\ \hline
+\rowcolor[HTML]{c41200} 
+employees                                & sector                      & gigantic                 \\ \hline
+\rowcolor[HTML]{c41200} 
+\cellcolor[HTML]{00BFC4}soldiers {[}f{]} & also                        & discount                 \\ \hline
+\rowcolor[HTML]{c41200} 
+\cellcolor[HTML]{00BFC4}state secretary  & federal minister {[}m{]}            & bene                     \\ \hline
+\rowcolor[HTML]{c41200} 
+\cellcolor[HTML]{00BFC4}warmly           & colleague {[}m{]}           & status holders           \\ \hline
+\rowcolor[HTML]{c41200} 
+\cellcolor[HTML]{00BFC4}important        & perhaps                     & heaven’s sake            \\ \hline
 \rowcolor[HTML]{00BFC4} 
-coalition agreement                      & \cellcolor[HTML]{F8766D}yes & Kops {(}PVV{)}           \\ \hline
+coalition agreement                      & \cellcolor[HTML]{c41200}committee & Kops {(}PVV{)}           \\ \hline
 \rowcolor[HTML]{00BFC4} 
-last                                     & believe                     & consideration            \\ \hline
+last                                     & colleagues {[}m{]}          & consideration            \\ \hline
 \rowcolor[HTML]{00BFC4} 
-therefore                                & minister {[}f{]}            & At the same time         \\ \hline
+therefore                                & Kurz                        & At the same time         \\ \hline
 \rowcolor[HTML]{00BFC4} 
-the left                                 & good                        & agreements               \\ \hline
+the left                                 & citizens {[}f{]}            & agreements               \\ \hline
 \rowcolor[HTML]{00BFC4} 
-colleagues                               & colleagues {[}m{]}          & diligent                 \\ \hline
+colleagues                               & dear                        & diligent                 \\ \hline
 \rowcolor[HTML]{00BFC4} 
-hence                                    & many                        & advised against          \\ \hline
+hence                                    & motion                      & advised against          \\ \hline
 \rowcolor[HTML]{00BFC4} 
-need                                     & commission                  & mister                   \\ \hline
+need                                     & humans                      & mister                   \\ \hline
 \rowcolor[HTML]{00BFC4} 
-citizens {[}f{]}                         & motion                      & look                     \\ \hline
+citizens {[}f{]}                         & minister {[}f{]}            & look                     \\ \hline
 \rowcolor[HTML]{00BFC4} 
-democrats                                & minister {[}f{]}            & Agema {(}PVV{)}          \\ \hline
+democrats                                & FPÖ                         & Agema {(}PVV{)}          \\ \hline
 \rowcolor[HTML]{00BFC4} 
-say                                      & humans                      & bright                   \\ \hline
+say                                      & federal minister {[}f{]}                      & bright                   \\ \hline
 \rowcolor[HTML]{00BFC4} 
 think                                    & colleagues {[}f{]}          & predominant              \\ \hline
 \rowcolor[HTML]{00BFC4} 
-colleagues {[}f{]}                       & dear                        & Baudet {(}FvD{)}         \\ \hline
+colleagues {[}f{]}                       & ÖVP                         & Baudet {(}FvD{)}         \\ \hline
 \end{tabular}
-\caption{Thirty best predictor words increasing (red) and decreasing (turquoise) likelihood of radical-right authorship for Germany, Austria, and the Netherlands. Squared brackets indicate gender, round brackets note the party affiliation for specific names.}
+\caption{Thirty best predictor words increasing (red/dark/top) and decreasing (turquoise/light/bottom) likelihood of radical-right authorship for Germany, Austria, and the Netherlands. Squared brackets indicate gender, round brackets note the party affiliation for specific names.}
 \label{tab:bpws}
 \end{table}
 
@@ -193,13 +196,13 @@ As the Austrian FPÖ was in government at the time, it makes sense that it is di
 
 Lastly, and differing from their German and Austrian equivalents, the Dutch FvD and PVV are distinguished primarily by reference to immigration and Islam. These parties' rhetoric refers to 'immigration', 'Islam'/'islamic' and 'illegal immigrants' more than other parties, in line with their distinctively anti-immigration positions. Reference to 'Brussels' underlines the Eurosceptic position of these parties (\cite{ThePopulist2019}). Words like 'house-keeping', and 'discount' could refer to the Budget, where at least the FvD proposes tax cuts\footnote{See \url{https://www.fvd.nl/economie}}. Additionally, FvD and PVV make use of more informal ('and so on', 'heaven’s sake') and less nuancing language ('consideration', 'diligent', 'advised against', 'predominant'). As nouns are usually not gendered in Dutch, it is not surprising that gendered language is no predictor here.\par
 
-The best predictor words are mainly in line with expectations about the political difference of radical-right parties in Germany, Austria, and the Netherlands. While the Dutch radical-right parties are primarily distinguished by their reference to immigration, as well as informal language, the German and Austrian radical-right parties resemble each other in their rejection of gendered language. The at-the-time governing Austrian FPÖ displays increased reference to the opposition, while the German AfD is more likely to address the government.\par
+The best predictor words are mainly in line with expectations about the political difference of radical-right parties in Germany, Austria, and the Netherlands. While the Dutch radical-right parties are primarily distinguished by their reference to immigration, as well as informal language, the German and Austrian radical-right parties resemble each other in their rejection of gendered language\footnote{However note that this does not mean that words about migration do not contribute positively to the German and Austrian estimates (in fact, they do). Instead, the 30 best predictor words offer a concise but ultimately superficial glimpse into the major differences between documents with the label of interest (radical-right authorhship) and all other documents.}. The at-the-time governing Austrian FPÖ displays increased reference to the opposition, while the German AfD is more likely to address the government. These findings also caution against a one-size-fits-all approach to pre-processing, as the rejection of gendered nouns would have remained hidden had I stemmed the words.\par
 
 
 \subsection{Construct validity I: coalition governments}
-This section presents data from government formations between radical-right and centre-right parties in Austria and the Netherlands. After a brief description of the cases, SMLSEs will be presented and their implications discussed. In line with expectations, the data shows an increased similarity between centre-right and radical-right parties when they govern together. \par
+Coalition governments demand from the participating parties to make concessions in order to agree on shared policy goals. In parliament, these proposals need to be defended by the governing parties against criticism from the opposition. As a result, these parties should become more similar in their positions and communication. The formation of coalition governments hence present a perfect case to validate the similarity estimates described above. The following section presents data from government formations between the radical-right FPÖ and the centre-right ÖVP in Austria\footnote{See Appendix C for the Dutch case.}. After a brief description of the case, similarity estimates will be presented and their implications discussed. In line with expectations, the data shows an increased similarity between centre-right and radical-right parties when they govern together. \par
 
-The Austrian case has seen the formation of three coalition governments between the conservative ÖVP and the radical-right FPÖ (and, briefly, the BZÖ) in 2000, 2003, and 2017. In 2000, the ÖVP managed to secure the chancellorship as the third-largest party by forming a coalition with the radical-right FPÖ. This broke the \textit{cordon sanitaire} formed by the social-democrat SPÖ and ÖVP to isolate the FPÖ after the takeover of right-win populist Jörg Haider in 1986. The formation was met by strong internal and external criticism due to the FPÖ's radical xenophobic policy positions, resulting in diplomatic sanctions against the country and large-scale demonstrations. The coalition broke down in 2002 due to internal rifts within the FPÖ, forcing early elections. This time, the ÖVP emerged as the largest party and entered coalition talks with the Greens, which eventually broke down. A coalition government was again formed with the FPÖ. In April 2005, the FPÖ split, and the coalition continued with the split-off BZÖ until 2006 (\cite{Luther2010}).\par
+The Austrian case has seen the formation of three coalition governments between the conservative ÖVP and the radical-right FPÖ in 2000, 2003, and 2017. In 2000, the ÖVP managed to secure the chancellorship as the third-largest party by forming a coalition with the radical-right FPÖ. This broke the \textit{cordon sanitaire} formed by the social-democrat SPÖ and ÖVP to isolate the FPÖ after the takeover of right-wing populist Jörg Haider in 1986. The formation was met by strong internal and external criticism due to the FPÖ's radical xenophobic policy positions, resulting in diplomatic sanctions against the country and large-scale demonstrations. The coalition broke down in 2002 due to internal rifts within the FPÖ, forcing early elections. This time, the ÖVP emerged as the largest party and entered coalition talks with the Greens, which eventually broke down. A coalition government was again formed with the FPÖ. In April 2005, the FPÖ split, and the coalition continued with the split-off BZÖ until 2006 (\cite{Luther2010}).\par
 
 The recent formation of the ÖVP-FPÖ coalition in 2017 was again met with domestic protests. After the experience of the so-called 'migration crisis' in 2015, immigration was the dominant topic in campaigns. ÖVP \textit{Spitzenkandidat} Kurz attacked the FPÖ's issue ownership, also taking  a restrictive position, especially surrounding the closure of the 'Balkan-route' for asylum seekers. This conveniently aligned these two parties' policies on this salient issue (\cite{Bodlos2018}). The data under study ends before the collapse of the government after the publication of the 'Ibiza-video' in 2019, showing FPÖ leaders Strache and Gudenus promising public contracts to a supposed Russian oligarch.\par 
 
@@ -217,21 +220,18 @@ Summarised, I expect the FPÖ to be less distinctive and the ÖVP to be more ali
 \label{fig:govs}
 \end{figure}
 
-The top row in figure \ref{fig:govs} shows the monthly SMLSEs for ÖVP and FPÖ across time. The BZÖ was excluded for ease of interpretation\footnote{See figure \ref{fig:bzoe} in appendix B1 for a graph including the BZÖ.}, but the estimate contains the classifier estimate for similarity to either radical-right party, i.e. the likelihood that the speaker belongs to \textit{either} BZÖ or FPÖ\footnote{See appendix B2, figure \ref{fig:fponly} for estimates of 'FPÖ-ness' only.}. The red shaded areas are the periods in which the ÖVP governed together with either of the two parties. A first observation is that the parties seem to move closer together when governing. This is confirmed by t-tests, which show that the distance between the two parties is significantly reduced (t=-10.2, p$<$0.001). Interestingly, this seems to be driven largely by the ÖVP (t=12.4, p$<$0.001), while the FPÖ is only slightly less distinctive in government (t=-1.68, p<0.1). \par
+Figure \ref{fig:govs} shows the quarterly mean estimates of the radical-right FPÖ (top) and centre-right ÖVP (bottom) towards each other. To compare these estimates, the similarity to the third large party during this time, the social-democrat SPD, has been added to each graph. The red-shaded ares indicate the time in which FPÖ and ÖVP were governing together. The similarity estimates of the FPÖ indicate that after the first formation in 2000, the party's similarity to the centre-right ÖVP increased substantially from about 15\% to 30-40\%. After the breakdown of the first coalition following the internal rift in the FPÖ, the similarity decreases - the re-elected party seems to hold a distance. In 2017, a strong increase from ~10\% to ~30\% is visible again. Note that here, the similarity to the social democrat SPÖ also increased, whic might indicate a moderation of the party.\par
 
-More interesting patterns are visible. Preceding the formations in 2000 and 2018, the conservatives became more similar to the radical-right, possibly signalling interest in coalition formation with the party. In 2003 however, the party becomes less similar for a short period\footnote{This is more pronounced in the FPÖ-only estimate excluding the BZÖ, see figure \ref{fig:fponly} appendix B2.} - they were in coalition talks with the Greens at the time and either expected heavy concessions from the FPÖ (which was already asking to govern again), or wanted to change course (\cite{Luther2010}: 91). The FPÖ, on the other hand, became less distinctive before the first formation in 2000 - possibly related to Haider's efforts to calm worries about the parties' Nazi past (ibid: 84); but more distinctive before the formation in 2018, where the ÖVP challenged the FPÖ's issue ownership on immigration, while the FPÖ underlined its 'orginalness' (\cite{Bodlos2018}). It is also visible how the FPÖ became more distinctive after the 'Knittelfeld crisis' in September 2002, where party members challenged their leadership in open opposition to their course (\cite{Luther2002}). \par
 
-The Netherlands saw only one formal coalition government between radical-right and centre-right, but a additional minority government supported by the radical-right PVV. In 2002 the \textit{Lijst Pim Fortuyn} (LPF) brought unprecedented volatility and polarisation into Dutch politics (\cite{Bischof2019a, VanderBrug2003}). Only formed about three months preceding the election, the party gained wide attraction due to its charismatic leader, a strong media presence and its distinctive anti-immigration stance (\cite{Koopmans2009}). On election day, nine days after the party leader Pim Fortuyn was assassinated, the party came in second with 17\% of the vote and formed a coalition with the christian-democrat CDA and the centre-right VVD. Having lost its founding father and as a result of its rapid success, the party was unprepared for government and was turmoiled by internal power struggles. This peaked when two LPF ministers stopped talking to each other. As a result, CDA and VVD broke the coalition only 87 days after its formation (\cite{Heinisch2003, Lucardie2007LPF}). I expect especially the LPF to become less distinctive here, as the party members decide to enter a coalition government. Similarly, CDA and VVD should become more alike the LPF in government.\par
+In the estimatees for the centre-right ÖVP (bottom graph figure \ref{fig:gov}), a similar pattern can be observed - most variance can be observed around coalition formations. In 2000, a similar strong move towards the FPÖ can be observed (~10\% $\rightarrow$ ~30\%), while the similarity with the SPÖ (with which the governed preceding the coalition with the FPÖ) strongly decreases from around 40\% to around 20\%. After the end of the coalition in 2006, the estimates 'flip' again, when the ÖVP enters a coalition with the social democrats. Lastly, the pattern from 2000 is repeated when the ÖVP again switches from a coalition with the social democrats to  coalition with the radical-right.\par
 
-The co-operation of VVD, CDA and PVV in 2010 did not result in a formal majority coalition (partly due to internal conflicts in the CDA regarding a coalition with the radical-right PVV), but a 'supported minority government'. This was the first minority government formed in the Netherlands since 1922. VVD and CDA staffed the cabinet, while the PVV only promised support on major issues. As this support was settled in a formal agreement, this government became basically a 'majority government in disguise' (\cite{Strom1990, VanHolsteyn2011}). In fact, the government cooperated very little with the opposition even compared to full majority governments - this is likely an outcome of the sorting of parties into a right-wing government and a left-wing opposition but underlines the similarity of this government to classic majority coalitions (\cite{Otjes2014}). As a result, I expect an increased similarity of the coalition partners, slightly less than in a majority coalition. \par
+T-tests confirm a significantly higher similarity of around 11.6 (FPÖ) and 11 (ÖVP) percentage points towards the respective other party when the two parties when governing together, compared to all other time-periods in the data ($p<0.001$). Given the average similarity of 16\% when not governing together, this is a \textit{very} substantive difference. Similar findings can be reported for the Netherlands, see Appendix C.\par
 
-The lower row of figure \ref{fig:govs} shows the monthly average SMLSE in the Netherlands for PVV, LPF, and VVD\footnote{CDA and FvD were excluded to maintain readability. The full plot can be found in figure \ref{fig:cda}, appendix C.}. The LPF is rather similar to all other parties when in government, obtaining a distinctiveness estimate of only around 60\%\footnote{This value can be interpreted as the confidence with which the classifier identifies LPF speeches as such.} throughout the time governing. Once the party leaves the government, the party becomes very distinctive again. For the VVD, we can observe a slightly increased score when governing with the LPF. For the supported minority government in 2010, things are far less clear. The VVD's estimate seems to remain rather stable, with possibly a slight \textit{decrease}, while the PVV becomes much less distinctive just \textit{before} signing the support agreement. Afterwards, the PVV stays somewhat indistinctive throughout the time supporting the government at around 60\% - 70\%. After the time in government, the party's communication becomes more distinctive again.\par
+More interesting patterns are visible. The FPÖ became more similar to the ÖVP before the first formation in 2000 - possibly related to Haider's efforts to calm worries about the parties' Nazi past (\cite{Luther2010}: 84); but more distinctive before the formation in 2018, where the ÖVP challenged the FPÖ's issue ownership on immigration, while the FPÖ underlined its 'orginalness' (\cite{Bodlos2018}). It is also visible how the FPÖ became more distinctive after the 'Knittelfeld crisis' in September 2002, where party members challenged their leadership in open opposition to their course (\cite{Luther2002}). When the coalition broke down, the estimates briefly show a high similarity of the radical-right to the social democrats. The centre-right's estimates already seem to shift preceding the formations in 2000 and 2018, possibly signalling interest in coalition formation with the party. After the breakdown of the first ÖVP-FPÖ coalition in 2003, the similarity to the FPÖ hits a low, while the estimates of similarity to the SPÖ show a lot of uncertainty - this might have to do with considerations within the ÖVP to return to governing with the SPÖ, which voted in favor of forming a coalition with the conservatives (\cite{Luther2010}: 91). \par
 
-T-tests confirm these observations. The LPF does show a significantly decreased distinctiveness in government (t=-6.15, p$<$0.01), as does the PVV (t=-5.36, p$<$0.001). The VVD only shows slightly increased similarity to the respective radical-right party when governing with the LPF (t=3.21, p$<$0.1), but when supported by the PVV, this effect becomes virtually zero (t=0.6, p=0.55). The CDA is assigned similar SMLSEs, though more clearly reacting to the LPF (t=7.1, p$<$0.01), but neither to the PVV (t=0.96, p=0.34). Overall, the VVD is not significantly affected by governing with a radical-right party (t = 1.64, p$>$0.1), while the CDA is significantly changing its rhetoric (t=2.01, p$<$0.05).\par
 
-Additionally, throughout the time in government, the LPF becomes less distinctive, while the VVD seems to become more similar. This is in line with an ideological shift in the VVD's manifesto, which took up a more anti-immigrant position (\cite{Pennings2003}), while the LPF dropped some of it's populist rhetoric (\cite{Lucardie2007LPF}). For the PVV, a shift towards the centre is visible before the formation of the minority support government - possibly signalling willingness to govern, similar to Haider's FPÖ preceding the Austrian elections in 2000.\par
 
-The findings are in line with my expectations: governing parties are more similar to each other - the estimates display construct validity. Interesting variation can be observed across countries and different government formations. While it is mainly the centre-right which accommodates the radical-right in Austria, it is usually the radical-right which becomes more similar in the Netherlands, even when only supporting a minority government. This might have to do with the differing coalition logic in the two countries. The ÖVP held the ideological middle-ground of the three major parties and was able to choose with whom to form a coalition - both in 2000 and 2017, the party decided against a continuation of the coalition with the social democrats. In the Netherlands, coalitions often include many parties, which gives those in charge of forming a government many options. The moderation on behalf of the PVV may have been necessitated by the resistance from parts of the CDA against the formation of a coalition with the PVV. Interesting is also that radical-right parties often moderated before coalition formations, possibly signalling willingness to govern. Only the FPÖ reacted to the ÖVP's accommodation in 2017 with further distinction. These observations indicate possible starting points for future research with this method and underline the richness of the data.\par
+% The findings are in line with my expectations: parties communicate more similar to each other when in coalition. Interesting variation can be observed across countries and different government formations. While it is mainly the centre-right which accommodates the radical-right in Austria, it is usually the radical-right which becomes more similar in the Netherlands, even when only supporting a minority government. This might have to do with the differing coalition logic in the two countries. The ÖVP held the ideological middle-ground of the three major parties and was able to choose with whom to form a coalition - both in 2000 and 2017, the party decided against a continuation of the coalition with the social democrats. In the Netherlands, coalitions often include many parties, which gives those in charge of forming a government many options. The moderation on behalf of the PVV may have been necessitated by the resistance from parts of the CDA against the formation of a coalition with the PVV. Interesting is also that radical-right parties often moderated before coalition formations, possibly signalling willingness to govern. Only the FPÖ reacted to the ÖVP's accommodation in 2017 with further distinction. These observations indicate possible starting points for future research with this method and underline the richness of the data.\par
 
 
 
@@ -239,12 +239,12 @@ The findings are in line with my expectations: governing parties are more simila
 
 Beyond parties, the similarity or distinctiveness of particular speakers can also be of interest. I use two cases from Germany and the Netherlands to further validate the method's precision. In both cases, I have strong expectations about the placement of individual speakers. In Germany, six members of the AfD have since left the party, mainly due to the increasing strength of the far-right faction within the radical-right party (\cite{Steffen2020AfD}). Two of these members, one of whom was former party leader Frauke Petry left within the first ten days following the election (\cite{LSE2018AfD}). As they were members of the party themselves, these members should obtain higher similarity scores than members of other parties\footnote{Note that the data contains no speeches by these two independent members preceding their exit, excluding a longitudinal analysis comparing their similarity before and after exit.}. Similarly, four members of the AfD who left the party later (outside of the observed time-frame) should obtain lower similarity scores, compared to loyal members of the AfD. \par
 
-\begin{sidewaysfigure}
+\begin{figure}
     \centering
-    \includegraphics[width=19cm]{DE/vis/DE_speakers.png}
+    \includegraphics[width=\textwidth]{DE/vis/DE_speakers.png}
     \caption{SMLSEs for speakers of the current German Bundestag.}
     \label{fig:speakers}
-\end{sidewaysfigure}
+\end{figure}
 
 Figure \ref{fig:speakers} shows the mean estimate for each speaker in the current Bundestag. Each speaker is represented by a dot. The dot's position on the vertical axis indicates the speaker's similarity to the AfD, according to the SMLSE, while its color and horizontal position indicate the speaker's party affiliation. The classifier assigns a probability greater than 0.5 for all AfD-members and a probability smaller than 0.5 to all speakers from established parties. In line with my expectation, the now independent former members of the AfD obtain rather high values (Frauke Petry: 52.6\%, Mario Mieruch: 39.3\%) and are located in between the AfD and the other parties. The mean estimate for all speeches by these two speakers is distinctive from all other parties. Despite being labelled not to be part of the AfD in the training data, the classifier correctly locates them in proximity of the AfD. \par
 
@@ -317,15 +317,15 @@ Furthermore, my claim is not that this method is \textit{per se} superior. Inste
 
 
 \section*{Acknowledgements}
-This paper was enriched by helpful comments from Anna Adendorf, Britt Anlar, João Areal Neto, Eelco Harteveld, Eva Hoxha, Hauke Licht, Philipp Mendoza, Thomas Meyer, Pieter Moens, and Gijs Schumacher.
+This paper was enriched by helpful comments and suggestions from Anna Adendorf, Britt Anlar, João Areal Neto, Avital Friedman, Eelco Harteveld, Eva Hoxha, Hauke Licht, Philipp Mendoza, Thomas Meyer, Pieter Moens, and Gijs Schumacher.
 
 
 \printbibliography
 
 \newpage
 
-\section*{Appendix}
-
-\subfile{appendix}
+% \section*{Appendix}
+% 
+% \subfile{appendix}
 
 \end{document}

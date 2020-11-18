@@ -84,9 +84,9 @@ vp <- ggplot(vp_dta, aes(x = my))+
   scale_color_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red')) +
   scale_fill_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red'))
 
-ggsave('vis/AT_vp_poster.png', vp, height = 4, width = 20)
-ggsave('vis/AT_vp_presi.png', vp, height = 6, width = 10)
-ggsave('vis/AT_vp_paper.png', vp, height = 4, width = 10)
+ggsave('vis/AT_vp_poster.png', vp, height = 3, width = 15)
+ggsave('vis/AT_vp_presi.png', vp, height = 4.5, width = 7.5)
+ggsave('vis/AT_vp_paper.png', vp, height = 3, width = 7.5)
 
 
 ## FPÖ
@@ -107,9 +107,9 @@ fp <- ggplot(fp_dta, aes(x = my))+
   scale_color_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red')) +
   scale_fill_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red'))
 
-ggsave('vis/AT_fp_poster.png', fp, height = 4, width = 20)
-ggsave('vis/AT_fp_presi.png', fp, height = 6, width = 10)
-ggsave('vis/AT_fp_paper.png', fp, height = 4, width = 10)
+ggsave('vis/AT_fp_poster.png', fp, height = 3, width = 15)
+ggsave('vis/AT_fp_presi.png', fp, height = 4.5, width = 7.5)
+ggsave('vis/AT_fp_paper.png', fp, height = 3, width = 7.5)
 
 
 
@@ -161,7 +161,7 @@ fpvpbz <- at_pt_my %>%
   ggtitle('Austria') +
   theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_fpvpbz_paper.png', fpvpbz, height = 4, width = 10)
+ggsave('vis/AT_fpvpbz_paper.png', fpvpbz, height = 3, width = 7.5)
 
 # B2: estimates for FP only
 
@@ -221,9 +221,9 @@ vp_est <- at_pt_my %>%
   ggtitle('Similarity estimate ÖVP', subtitle = 'monthly average') +
   theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_vp_est_poster.png', vp_est, height = 4, width = 20)
-ggsave('vis/AT_vp_est_presi.png', vp_est, height = 6, width = 10)
-ggsave('vis/AT_vp_est_paper.png', vp_est, height = 4, width = 10)
+ggsave('vis/AT_vp_est_poster.png', vp_est, height = 3, width = 15)
+ggsave('vis/AT_vp_est_presi.png', vp_est, height = 4.5, width = 7.5)
+ggsave('vis/AT_vp_est_paper.png', vp_est, height = 3, width = 7.5)
 
 
 # B4: increased sim VP mit FP 2018
@@ -275,8 +275,8 @@ kurz_vp <- at_pt_my %>%
   ggtitle('Development of similarity to FPÖ', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
   theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_kurz_fp_est_presi.png', kurz_vp, height = 6, width = 10)
-ggsave('vis/AT_kurz_fp_est_paper.png', kurz_vp, height = 4, width = 10)
+ggsave('vis/AT_kurz_fp_est_presi.png', kurz_vp, height = 4.5, width = 7.5)
+ggsave('vis/AT_kurz_fp_est_paper.png', kurz_vp, height = 3, width = 7.5)
 
 
 
@@ -308,11 +308,11 @@ kurz_fp <- at_pt_my %>%
   ggtitle('Development of similarity to ÖVP', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
   theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_kurz_vp_est_presi.png', fpvp, height = 6, width = 10)
-ggsave('vis/AT_kurz_vp_est_paper.png', fpvp, height = 4, width = 10)
+ggsave('vis/AT_kurz_vp_est_presi.png', kurz_fp, height = 4.5, width = 7.5)
+ggsave('vis/AT_kurz_vp_est_paper.png', kurz_fp, height = 3, width = 7.5)
 
 kurz_comp <- gridExtra::grid.arrange(kurz_vp, kurz_fp)
-ggsave('vis/AT_kurz_comp.png', kurz_comp, height = 8, width = 10)
+ggsave('vis/AT_kurz_comp.png', kurz_comp, height = 6, width = 7.5)
 
 
 # B6: SP only, compaerd to either party
@@ -340,4 +340,4 @@ kurz_sp <- at_pt_my %>%
   ggtitle('Development of SPÖ similarity', subtitle = 'Monthly average, 1.1.2017-1.7.2018') +
   theme(text = element_text(family='Verdana'))
 
-ggsave('vis/AT_kurz_sp.png', kurz_sp, height = 4, width = 10)
+ggsave('vis/AT_kurz_sp.png', kurz_sp, height = 3, width = 7.5)
