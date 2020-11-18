@@ -13,6 +13,7 @@ from datetime import datetime as dt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from imblearn.over_sampling import SMOTE    
 from sklearn.linear_model import LogisticRegression
+import eli5
 
 df = pd.read_csv('processed/Nationalrat_cleaned.csv')
 df.party=df.party.fillna('')
@@ -90,7 +91,7 @@ for pt in outcome_pt[0:4]:
         if len(np.unique(df.loc[df['session']==s,pt]))==1:
             print('No '+pt+' speeches in session #'+str(s)+', skipping.')
             continue
-        vecs[pt][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False) # was 200 least-used terms, similar to Petersen & Spirling
+        vecs[pt][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False)
         dtms[pt][s]=vecs[pt][s].fit_transform([t for t in df.loc[df['session']==s,'raw']])
         
         # choose largest subset for oversampling
@@ -111,6 +112,10 @@ for pt in outcome_pt[0:4]:
         
         logreg.fit(X_final, y)
         df.loc[df['session']==s, str(pt+'_pred')]=[pr[1] for pr in logreg.predict_proba(dtms[pt][s])]
+        htmlobj=eli5.show_weights(logreg, top = 31, vec = vecs[pt][s])
+        with open('vis/eli5_weights_at_clf_'+pt+str(s)+'.htm','wb') as f:
+            f.write(htmlobj.data.encode("UTF-8"))
+
         print('\tFinished training classifier '+pt+' session #'+str(s))
 
 #%%  RR general predictor
@@ -153,9 +158,3 @@ df_r.to_csv('smlse/AT_notext.csv')
 # with text
 df = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'SPÖ', 'ÖVP', 'BZÖ_pred', 'FPÖ_pred', 'SPÖ_pred', 'ÖVP_pred', 'RR_pred', 'raw', 'n_words']]
 df.to_csv('smlse/AT_text.csv')
-
-#%% assess best predictor words for last session
-import eli5
-htmlobj=eli5.show_weights(logreg, top = 30, vec = vecs['RR'][16])
-with open('vis/eli5_weights_at_clf.htm','wb') as f:   # Use some reasonable temp name
-    f.write(htmlobj.data.encode("UTF-8"))
