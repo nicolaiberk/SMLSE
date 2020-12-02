@@ -44,24 +44,24 @@ at_pt_my <- at %>%
             n_speeches = length(RR_pred))
 
 at_pt_my$se_rr <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_rr <- at_pt_my$mean_rr - 1.96*at_pt_my$se_rr
-at_pt_my$ci_up_rr <- at_pt_my$mean_rr + 1.96*at_pt_my$se_rr
+at_pt_my$ci_low_rr <- at_pt_my$mean_rr - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_rr
+at_pt_my$ci_up_rr <- at_pt_my$mean_rr + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_rr
 
 at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
-at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
+at_pt_my$ci_low_vp <- at_pt_my$mean_vp - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_vp
+at_pt_my$ci_up_vp <- at_pt_my$mean_vp + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_vp
 
 at_pt_my$se_sp <- at_pt_my$sd_sp/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_sp <- at_pt_my$mean_sp - 1.96*at_pt_my$se_sp
-at_pt_my$ci_up_sp <- at_pt_my$mean_sp + 1.96*at_pt_my$se_sp
+at_pt_my$ci_low_sp <- at_pt_my$mean_sp - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_sp
+at_pt_my$ci_up_sp <- at_pt_my$mean_sp + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_sp
 
 at_pt_my$se_fp <- at_pt_my$sd_fp/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_fp <- at_pt_my$mean_fp - 1.96*at_pt_my$se_fp
-at_pt_my$ci_up_fp <- at_pt_my$mean_fp + 1.96*at_pt_my$se_fp
+at_pt_my$ci_low_fp <- at_pt_my$mean_fp - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_fp
+at_pt_my$ci_up_fp <- at_pt_my$mean_fp + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_fp
 
 at_pt_my$se_bz <- at_pt_my$sd_bz/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_bz <- at_pt_my$mean_bz - 1.96*at_pt_my$se_bz
-at_pt_my$ci_up_bz <- at_pt_my$mean_bz + 1.96*at_pt_my$se_bz
+at_pt_my$ci_low_bz <- at_pt_my$mean_bz - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_bz
+at_pt_my$ci_up_bz <- at_pt_my$mean_bz + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_bz
 
 
 # plot
@@ -74,15 +74,15 @@ vp <- ggplot(vp_dta, aes(x = my))+
   annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
   annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
   # geom_vline(xintercept = as.Date(x = c('28.2.2003'), format = '%d.%m.%Y')) +
-  geom_line(aes(y = vp_dta$mean_rr, col = 'FPÖ')) +
+  geom_line(aes(y = vp_dta$mean_rr, col = 'FPÖ/BZÖ')) +
   geom_line(aes(y = vp_dta$mean_sp, col = 'SPÖ')) +
-  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ', col = 'FPÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ/BZÖ', col = 'FPÖ/BZÖ')) +
   geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_sp, ymax = vp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
   ylab('Similarity') + xlab('') +
   ggtitle('Quarterly similarity estimates of centre-right ÖVP to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
   theme(text = element_text(family='Verdana')) +
-  scale_color_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red')) +
-  scale_fill_manual(name = '', values = c('FPÖ' = 'blue', 'SPÖ' = 'red'))
+  scale_color_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red')) +
+  scale_fill_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red'))
 
 ggsave('vis/AT_vp_poster.png', vp, height = 3, width = 15)
 ggsave('vis/AT_vp_presi.png', vp, height = 4.5, width = 7.5)
@@ -120,8 +120,8 @@ at_pt <- at %>%
             sd_rr = sqrt(wtd.var(x=RR_pred, weights = n_words)),
             n_speeches = length(RR_pred))
 at_pt$se <- at_pt$sd_rr/sqrt(at_pt$n_speeches)
-at_pt$ci_low <- at_pt$mean_rr - 1.96*at_pt$se
-at_pt$ci_up <- at_pt$mean_rr + 1.96*at_pt$se
+at_pt$ci_low <- at_pt$mean_rr - qt(1 - (0.05 / 2), at_pt$n_speeches-1)*at_pt$se
+at_pt$ci_up <- at_pt$mean_rr + qt(1 - (0.05 / 2), at_pt$n_speeches-1)*at_pt$se
 
 # plot
 party_plot <- ggplot(at_pt, aes(x=mean_rr, y=party, xmin = ci_low, xmax = ci_up, col = party)) + 
@@ -173,8 +173,8 @@ at_pt_my_fp <- at %>%
             n_speeches = length(FPÖ_pred))
 
 at_pt_my_fp$se <- at_pt_my_fp$sd_rr/sqrt(at_pt_my_fp$n_speeches)
-at_pt_my_fp$ci_low <- at_pt_my_fp$mean_rr - 1.96*at_pt_my_fp$se
-at_pt_my_fp$ci_up <- at_pt_my_fp$mean_rr + 1.96*at_pt_my_fp$se
+at_pt_my_fp$ci_low <- at_pt_my_fp$mean_rr - qt(1 - (0.05 / 2), at_pt_my_fp$n_speeches-1)*at_pt_my_fp$se
+at_pt_my_fp$ci_up <- at_pt_my_fp$mean_rr + qt(1 - (0.05 / 2), at_pt_my_fp$n_speeches-1)*at_pt_my_fp$se
 
 ## plot
 fpvp_fp <- at_pt_my_fp %>% 
@@ -203,8 +203,8 @@ at_pt_my <- at %>%
             n_speeches = length(ÖVP_pred))
 
 at_pt_my$se <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low <- at_pt_my$mean_vp - 1.96*at_pt_my$se
-at_pt_my$ci_up <- at_pt_my$mean_vp + 1.96*at_pt_my$se
+at_pt_my$ci_low <- at_pt_my$mean_vp - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se
+at_pt_my$ci_up <- at_pt_my$mean_vp + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se
 
 
 # plot
@@ -245,12 +245,12 @@ at_pt_my <- at %>%
             n_speeches = length(RR_pred))
 
 at_pt_my$se_rr <- at_pt_my$sd_rr/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_rr <- at_pt_my$mean_rr - 1.96*at_pt_my$se_rr
-at_pt_my$ci_up_rr <- at_pt_my$mean_rr + 1.96*at_pt_my$se_rr
+at_pt_my$ci_low_rr <- at_pt_my$mean_rr - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_rr
+at_pt_my$ci_up_rr <- at_pt_my$mean_rr + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_rr
 
 at_pt_my$se_vp <- at_pt_my$sd_vp/sqrt(at_pt_my$n_speeches)
-at_pt_my$ci_low_vp <- at_pt_my$mean_vp - 1.96*at_pt_my$se_vp
-at_pt_my$ci_up_vp <- at_pt_my$mean_vp + 1.96*at_pt_my$se_vp
+at_pt_my$ci_low_vp <- at_pt_my$mean_vp - qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_vp
+at_pt_my$ci_up_vp <- at_pt_my$mean_vp + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_vp
 
 kurz_vp <- at_pt_my %>% 
   filter(party %in% c('ÖVP', 'SPÖ')) %>% 
