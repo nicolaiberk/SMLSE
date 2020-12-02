@@ -187,13 +187,11 @@ grangertest(at_merged$diff_poll ~ at_merged$diff_pred, order = 12) # not signifi
 ##############################################
 # t-test party distance gov-opp nl
 
-## FP distance to VP
 fp_pred <- pps %>% 
   filter(party == 'FPÃ–') %>% 
   select(Ã.VP_pred, my, n_words) %>% 
   group_by(my) %>% 
   summarise(fp_pred = wtd.mean(x=Ã.VP_pred, w = n_words))
-
 
 vp_pred <- pps %>% 
   filter(party == 'Ã–VP') %>% 
@@ -201,7 +199,15 @@ vp_pred <- pps %>%
   group_by(my) %>% 
   summarise(vp_pred = wtd.mean(x=FPÃ._pred, w = n_words))
 
+vp_pred_rr <- pps %>% 
+  filter(party == 'Ã–VP') %>% 
+  select(RR_pred, my, n_words) %>% 
+  group_by(my) %>% 
+  summarise(vp_pred_rr = wtd.mean(x=RR_pred, w = n_words))
+
+
 vpfp <- merge(fp_pred, vp_pred, by = 'my', all.x = T)
+vpfp <- merge(vpfp, vp_pred_rr, by = 'my', all.x = T)
 
 vpfp$gov <- 0
 vpfp$gov[vpfp$my >= as.Date('01.02.2000', format = '%d.%m.%Y') & vpfp$my <= as.Date('30.09.2006', format = '%d.%m.%Y')] <- 1
@@ -209,3 +215,4 @@ vpfp$gov[vpfp$my >= as.Date('01.12.2018', format = '%d.%m.%Y') & vpfp$my <= as.D
 
 t.test(vpfp$fp_pred ~ vpfp$gov) # significant, p < 0.000001, diff = 0.271- 0.155 = 0.116
 t.test(vpfp$vp_pred ~ vpfp$gov) # significant, p < 0.000001, diff = 0.27 - 0.159 = 0.111
+t.test(vpfp$vp_pred_rr ~ vpfp$gov) # significant, p < 0.000001, diff = 0.277 - 0.171 = 0.105
