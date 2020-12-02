@@ -122,44 +122,52 @@ df %>% ggplot() +
   geom_vline(xintercept = 0, col = 'red', lty = 2) +
   scale_y_continuous(name = ''
                      , breaks = c(), minor_breaks = c(0,-1,-2,-3)
-                     # , breaks=c(0,-1,-2,-3), labels = c('SMLSE', 'SMLSE (subset)', 'Wordfish', 'Cosine Similarity')
+                     # , breaks=c(0,-1,-2,-3), labels = c('Supervised estimate', 'Supervised estimate (subset)', 'Wordfish', 'Cosine Similarity')
                      ) + 
-  scale_color_discrete(name = "", labels = c("SMLSE", "SMLSE (subset)", "Wordfish", "Cosine similarity"))+
+  scale_color_discrete(name = "", labels = c("Supervised estimate", "Supervised estimate (subset)", "Wordfish", "Cosine similarity"))+
   scale_x_continuous(name = 'Normalized estimate', limits = c(-1,3)) +
   theme(text = element_text(family='Verdana'))
 
 
 # plot per measure
 p0 <- ggplot(df) + 
-  geom_point(aes(x=mean_est, y=party, col = party)) +
+  geom_point(aes(x=mean_est, y=party, col = party), size = 2) +
   geom_linerange(aes(xmin = ci_low_est, xmax = ci_up_est, y=party, col = party)) +
-  xlab('') + ylab('') + ggtitle('SMLSE') + scale_color_manual(values=partycols) +
+  xlab('') + ylab('') + ggtitle('Supervised estimate') + scale_color_manual(values=partycols) +
+  theme_minimal() +
   theme(legend.position = 'none',
+        axis.text.y = element_text(size = 12),
         text = element_text(family='Verdana')) # + xlim(c(0,1))
 
 p1 <- ggplot(df) + 
-  geom_point(aes(x=mean_1000, y=party, col = party)) +
+  geom_point(aes(x=mean_1000, y=party, col = party), size = 2) +
   geom_linerange(aes(xmin = ci_low_1000, xmax = ci_up_1000, y=party, col = party)) +
-  xlab('') + ylab('') + ggtitle('SMLSE (restricted model)') + scale_color_manual(values=partycols) +
+  xlab('') + ylab('') + ggtitle('Supervised estimate (subset)') + scale_color_manual(values=partycols) +
+  theme_minimal() +
   theme(legend.position = 'none',
+        axis.text.y = element_text(size = 12),
         text = element_text(family='Verdana')) # + xlim(c(0,1))
 
 p2 <- ggplot(df) + 
-  geom_point(aes(x=-wf, y=party, col = party)) +
+  geom_point(aes(x=-wf, y=party, col = party), size = 2) +
   geom_linerange(aes(xmin = -wf_ci_low, xmax = -wf_ci_up, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('Wordfish') + scale_color_manual(values=partycols) +
+  theme_minimal() +
   theme(legend.position = 'none',
+        axis.text.y = element_text(size = 12),
         text = element_text(family='Verdana'))
 
 p3 <- ggplot(df) + 
-  geom_point(aes(x=mean_cs, y=party, col = party)) +
+  geom_point(aes(x=mean_cs, y=party, col = party), size = 2) +
   geom_linerange(aes(xmin = ci_low_cs, xmax = ci_up_cs, y=party, col = party)) +
   xlab('') + ylab('') + ggtitle('Cosine similarity') + scale_color_manual(values=partycols) +
+  theme_minimal() +
   theme(legend.position = 'none',
+        axis.text.y = element_text(size = 12),
         text = element_text(family='Verdana'))
 
 
-gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts.jpg', height = 6, width = 8)
-gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts_presi.jpg', height = 5, width = 7)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts.jpg', height = 5, width = 10)
+gridExtra::grid.arrange(p0,p1,p2,p3) %>% ggsave(filename = 'vis/similarity_pts_presi.jpg', height = 4, width = 8)
 
 
