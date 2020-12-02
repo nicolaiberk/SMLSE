@@ -119,7 +119,8 @@ perf_table = {"Classifier":[],
               "Stemmed":[],
               "Accuracy":[],
               "Precision":[],
-              "Recall":[]}
+              "Recall":[],
+              "F1":[]}
         
 for m in models:
     for parties in [["AfD"], ["AfD", "independent"]]:
@@ -148,5 +149,6 @@ for m in models:
                 perf_table['Accuracy'].append(np.mean(acc).round(2))
                 perf_table['Precision'].append(np.mean(precis).round(2))
                 perf_table['Recall'].append(np.mean(recall).round(2))
+                perf_table['F1'].append(np.mean(f1).round(2))
 
 pd.DataFrame(perf_table).to_csv('smlse/ClassifierPerformance.csv')

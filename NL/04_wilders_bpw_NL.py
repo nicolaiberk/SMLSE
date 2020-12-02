@@ -66,3 +66,31 @@ print(wilders.head(30))
 
 # write to csv
 wilders.to_csv('vis/Wilders_bpw.csv')
+
+
+#%% alternative calculation (more focussed on *Wilders'* language)
+
+# build OLS based on only Wilders' estimates in relevant time-frame
+from sklearn.linear_model import LinearRegression
+
+# define X & Y
+dtm = vec.fit_transform([t for t in df['raw']])
+y = df.RR_pred
+
+# fit model
+linreg = LinearRegression()
+linreg.fit(dtm, y)
+
+# extract coefficients and overall contribution
+counts = np.transpose(dtm.sum(axis = 0))
+coefficients = linreg.coef_
+weights = pd.DataFrame(counts)*pd.DataFrame(coefficients)
+
+# show most important positive words
+vp = pd.concat([pd.DataFrame(np.transpose(vec.get_feature_names())),pd.DataFrame(weights), pd.DataFrame(coefficients), pd.DataFrame(counts)], axis = 1)
+vp.columns = ['word', 'weight', 'coef', 'count']
+vp = vp.sort_values(by = ['coef'], ascending=False)
+print(vp.head(30))
+
+# write to csv
+vp.to_csv('vis/wilders_bpw_alt.csv')

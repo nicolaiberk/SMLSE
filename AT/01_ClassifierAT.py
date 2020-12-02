@@ -13,6 +13,7 @@ from datetime import datetime as dt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from imblearn.over_sampling import SMOTE    
 from sklearn.linear_model import LogisticRegression
+import eli5
 
 df = pd.read_csv('processed/Nationalrat_cleaned.csv')
 df.party=df.party.fillna('')
@@ -32,9 +33,11 @@ print(df.family.value_counts())
 #%% prepare 
 df['FPÖ'] = (df.party=='FPÖ')
 df['BZÖ'] = (df.party=='BZÖ')
+df['ÖVP'] = (df.party=='ÖVP')
+df['SPÖ'] = (df.party=='SPÖ')
 
-radright = ['FPÖ','BZÖ']
-df['RR'] = (df.party.isin(radright))
+outcome_pt = ['FPÖ', 'BZÖ', 'ÖVP', 'SPÖ', 'RR']
+df['RR'] = (df.party.isin(['FPÖ','BZÖ']))
 
 df.loc[df['party']=='JETZT','party'] = 'PILZ'
 df.loc[df['party']=='Jetzt – Liste PILZ','party'] = 'PILZ'
@@ -75,22 +78,20 @@ df.loc[(df['date_tr']>=dt.strptime('09.11.2017', '%d.%m.%Y')) &
        'session'] = 16
 
 
-#%% train classifiers (once for every legislative session, once for each RR party)
-dtms = {p:{s:'' for s in np.unique(df.session)} for p in ['FPÖ', 'BZÖ','RR']}
-vecs = {p:{s:'' for s in np.unique(df.session)} for p in ['FPÖ', 'BZÖ','RR']}
+#%% train classifiers (once for every legislative session, once for each RR party + VP + SP)
+dtms = {p:{s:'' for s in np.unique(df.session)} for p in outcome_pt}
+vecs = {p:{s:'' for s in np.unique(df.session)} for p in outcome_pt}
 logreg = LogisticRegression(max_iter=1000)
-df.loc[:,'BZÖ_pred'] = None
-df.loc[:,'FPÖ_pred'] = None
 
                 
-for pt in radright:
+for pt in outcome_pt[0:4]:
     print('Training classifiers '+pt+':')
     for s in np.unique(df.session):
         print('\tSession #'+str(s)+'...')
         if len(np.unique(df.loc[df['session']==s,pt]))==1:
             print('No '+pt+' speeches in session #'+str(s)+', skipping.')
             continue
-        vecs[pt][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False) # was 200 least-used terms, similar to Petersen & Spirling
+        vecs[pt][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False)
         dtms[pt][s]=vecs[pt][s].fit_transform([t for t in df.loc[df['session']==s,'raw']])
         
         # choose largest subset for oversampling
@@ -111,6 +112,10 @@ for pt in radright:
         
         logreg.fit(X_final, y)
         df.loc[df['session']==s, str(pt+'_pred')]=[pr[1] for pr in logreg.predict_proba(dtms[pt][s])]
+        htmlobj=eli5.show_weights(logreg, top = 31, vec = vecs[pt][s])
+        with open('vis/eli5_weights_at_clf_'+pt+str(s)+'.htm','wb') as f:
+            f.write(htmlobj.data.encode("UTF-8"))
+
         print('\tFinished training classifier '+pt+' session #'+str(s))
 
 #%%  RR general predictor
@@ -147,15 +152,9 @@ for s in np.unique(df.session):
 
 #%% write into csv
 
-df_r = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'BZÖ_pred', 'FPÖ_pred', 'RR_pred', 'n_words']]
+df_r = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'SPÖ', 'ÖVP', 'BZÖ_pred', 'FPÖ_pred', 'SPÖ_pred', 'ÖVP_pred', 'RR_pred', 'n_words']]
 df_r.to_csv('smlse/AT_notext.csv')
 
 # with text
-df = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'BZÖ_pred', 'FPÖ_pred', 'RR_pred', 'raw', 'n_words']]
+df = df[['date', 'id', 'party', 'partyfacts', 'family', 'session', 'speaker', 'agenda', 'BZÖ', 'FPÖ', 'SPÖ', 'ÖVP', 'BZÖ_pred', 'FPÖ_pred', 'SPÖ_pred', 'ÖVP_pred', 'RR_pred', 'raw', 'n_words']]
 df.to_csv('smlse/AT_text.csv')
-
-#%% assess best predictor words for last session
-import eli5
-htmlobj=eli5.show_weights(logreg, top = 30, vec = vecs['RR'][16])
-with open('vis/eli5_weights_at_clf.htm','wb') as f:   # Use some reasonable temp name
-    f.write(htmlobj.data.encode("UTF-8"))
