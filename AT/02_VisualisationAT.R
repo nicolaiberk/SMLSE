@@ -150,7 +150,7 @@ ggsave('vis/AT_parties_density.png', party_dens_plot, width = 6, height=3)
 # B1: estimates including BZÖ
 fpvpbz <- at_pt_my %>% 
   filter(party %in% c('FPÖ', 'ÖVP', 'BZÖ')) %>% 
-  ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low, ymax = ci_up))+ 
+  ggplot(aes(x = my, y = mean_rr, col=party, fill=party, ymin = ci_low_rr, ymax = ci_up_rr))+ 
   annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') +
   annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=1, alpha=0.1, fill ='red') + 
   geom_line() +
