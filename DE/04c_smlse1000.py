@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue May  5 15:07:33 2020
+Measuring Rhetorical Similarity with Supervised Machine Learning
+
+Estimates based on subset for wordfish comparison
 
 @author: Nicolai Berk
 """
+
+# Setup
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,9 +18,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 import time
 
-
+# load and prepare data
 df = pd.read_csv('processed/Bundestag_cleaned.csv')
-
 df.party = df.party.fillna('')
 df = df[df.party != ''] # drop non-partisan/non parliamentary members' speeches
 
@@ -26,7 +29,6 @@ df = df[df['date_tr'] > pd.to_datetime('2017-10-24', format='%Y-%m-%d')] # subse
 df = df[df['n_words_raw'] > 50]
 
 # balanced subset of 1000 speeches
-
 afd_speeches = df[df.party == 'AfD'].sample(500)
 spd_speeches = df[df.party == 'SPD'].sample(100)
 cdu_speeches = df[df.party == 'CDU/CSU'].sample(100)

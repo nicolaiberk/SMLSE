@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 27 15:24:39 2020
+Measuring Rhetorical Similarity with Supervised Machine Learning
 
-Relationship to cosin similarity
+Estimate Cosin and Jaccard similarity
 
 @author: Nicolai Berk
 """
@@ -73,9 +73,6 @@ plt.clf()
 sns.boxplot(df.party, df.cosine_sim_alt2).figure.savefig('vis/cosin_alt_party_box.png')
 plt.clf()
 
-
-
-#%% try sklearn's pairwise_distances
 
 #%% jaccard similarity
 df_tokens = np.array([nltk.word_tokenize(t) for t in df.loc[:, 'raw']])

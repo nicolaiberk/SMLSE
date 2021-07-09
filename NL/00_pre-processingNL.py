@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Master Thesis
+Measuring Rhetorical Similarity with Supervised Machine Learning
 
-Pre-processing DE
+Pre-processing Dutch Tweede Kamer Speeches
+
+@author: Nicolai Berk
 """
 
-#%% import
+# Setup
 import csv
 import datetime
 import nltk
@@ -15,7 +17,6 @@ import re
 
 csv.field_size_limit(100000000)
 
-#%% NL
 
 n = 1050000
 skip = 0

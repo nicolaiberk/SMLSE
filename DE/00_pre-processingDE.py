@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Master Thesis
+Measuring Rhetorical Similarity with Supervised Machine Learning
 
-Pre-processing DE
+Pre-processing German Bundestag Speeches
+
+@author: Nicolai Berk
 """
 
-#%% import
+#%% Setup
 import csv
 import datetime
 import nltk
@@ -18,7 +20,7 @@ stemmer = SnowballStemmer('german')
 
 csv.field_size_limit(100000000)
 
-n = 380000 # n of sppeeches to process
+n = 380000 # ~n of sppeeches to process
 
 
 print('Processing German speeches...')

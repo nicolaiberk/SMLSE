@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Measuring Rhetorical Similarity with Supervised Machine Learning
+
+Best predictor words Wilders
+
+@author: Nicolai Berk
+"""
+
+# Setup
 import re
 import time
 import pandas as pd
@@ -65,7 +76,7 @@ wilders = wilders.sort_values(by = ['weight'], ascending=False)
 print(wilders.head(30))
 
 # write to csv
-wilders.to_csv('vis/Wilders_bpw.csv')
+wilders.to_csv('vis/Wilders_bpw_clf.csv')
 
 
 #%% alternative calculation (more focussed on *Wilders'* language)
@@ -93,4 +104,4 @@ vp = vp.sort_values(by = ['coef'], ascending=False)
 print(vp.head(30))
 
 # write to csv
-vp.to_csv('vis/wilders_bpw_alt.csv')
+vp.to_csv('vis/wilders_bpw_ols.csv')

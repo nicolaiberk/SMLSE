@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue May  5 15:07:33 2020
+Measuring Rhetorical Similarity with Supervised Machine Learning
+
+Classifiers German Bundestag Speeches
 
 @author: Nicolai Berk
 """
+
+# suppress warnings
+import warnings
+warnings.filterwarnings("ignore")
+
+# Setup
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,11 +23,11 @@ from imblearn.over_sampling import SMOTE
 from sklearn.linear_model import LogisticRegression
 import time
 
-
+# load and clean data
 df = pd.read_csv('processed/Bundestag_cleaned.csv')
 
 df.party = df.party.fillna('')
-df = df[df.party != ''] # drop non-partisan/non parliamentary members' speeches
+df = df[df.party != ''] # drop non-parliamentary members' speeches
 
 # subset
 df['date_tr'] = pd.to_datetime(df.date, format='%Y-%m-%d')

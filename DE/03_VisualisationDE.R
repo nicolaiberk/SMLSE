@@ -1,4 +1,10 @@
-# visualisation of predictors
+###########################################################
+# MEASURING RHETORICAL SIMILARITY WITH SUPERVISED LEARNING
+# VISUALISATION OF GERMAN ESTIMATES
+# Author: Nicolai Berk
+###########################################################
+
+# Setup
 library(dplyr)
 library(ggplot2)
 library(lubridate)
@@ -11,17 +17,17 @@ library(stringr)
 
 options(stringsAsFactors = FALSE)
 
-# import fonts (in case Verdana not loaded yet, run uncommented lines)
+# import fonts
 font_import(pattern = '.*verdana.*', prompt = F)
 loadfonts(device = "win", quiet = T)
 windowsFonts(family = 'Verdana')
 
-# Import ####
+# Import
 setwd("DE")
 de <- read.csv('smlse/DE_notext.csv', fileEncoding = 'UTF-8')
 de$date <- as.Date(de$date)
 
-## vis #####
+# define groups and partycolors
 de <- de[!de$party %in% c(''),]
 
 de$party <- factor(de$party, levels = c("AfD", "CDU/CSU", "SPD", "FDP", "GRUENE", "PDS/LINKE", "independent"))

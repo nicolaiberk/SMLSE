@@ -1,14 +1,19 @@
+###########################################################
+# MEASURING RHETORICAL SIMILARITY WITH SUPERVISED LEARNING
+# VISUALISATION OF COMPARATIVE ESTIMATES (Figure 4)
+# Author: Nicolai Berk
+###########################################################
+
+# setup
 library(dplyr)
 library(ggplot2)
 library(ggridges)
 library(corrplot)
 library(psych)
 library(Hmisc)
-# library(BBmisc)
 library(RColorBrewer)
 library(extrafont)
 
-setwd('DE')
 
 # import fonts
 font_import(pattern = '.*verdana.*', prompt = F)
@@ -17,22 +22,14 @@ windowsFonts(family = 'Verdana')
 
 
 # load similarity scores
+setwd('DE')
 cosine_sim <- read.csv('sims/DE_similarities.csv')
 smlse_1000 <- read.csv('smlse/DE_smlse1000.csv')
 wordfish <- read.csv('sims/DE_wordfish.csv')
 
 
-cor(cosine_sim$n_words_raw, cosine_sim$cosine_sim) # 0.87 - mainly higher scores due to higher likelihood of words to be included - report
+cor(cosine_sim$n_words_raw, cosine_sim$cosine_sim) # 0.87 - mainly higher scores due to higher likelihood of words to be included
 
-
-# normalise
-# cosine_sim$afd_pred <- normalize(cosine_sim$afd_pred)
-# cosine_sim$cosine_sim <- normalize(cosine_sim$cosine_sim)
-# cosine_sim$jaccard <- normalize(cosine_sim$jaccard)
-# 
-# smlse_1000$afd_pred <- normalize(smlse_1000$afd_pred)
-# 
-# wordfish$wordfish <- normalize(wordfish$wordfish)
 
 # aggregate cosine
 cosine_sim <- cosine_sim %>% 
