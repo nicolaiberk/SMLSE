@@ -1,3 +1,10 @@
+###########################################################
+# MEASURING RHETORICAL SIMILARITY WITH SUPERVISED LEARNING
+# MODELS AND T-TESTS FOR AUSTRIAN ESTIMATES
+# Author: Nicolai Berk
+###########################################################
+
+# Setup
 library(dplyr)
 library(lubridate)
 library(Hmisc)
@@ -185,7 +192,7 @@ grangertest(at_merged$diff_poll ~ at_merged$diff_pred, order = 12) # not signifi
 
 
 ##############################################
-# t-test party distance gov-opp nl
+# t-test party distance gov-opp
 
 fp_pred <- pps %>% 
   filter(party == 'FPÃ–') %>% 

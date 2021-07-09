@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Master Thesis
+Measuring Rhetorical Similarity with Supervised Machine Learning
 
-Pre-processing AT
+Pre-processing Austrian Nationalrat Speeches
+
+@author: Nicolai Berk
 """
 
+# Setup
 import csv
 import datetime
 import nltk
@@ -15,12 +18,10 @@ import re
 csv.field_size_limit(100000000)
 
 
-#%% AT
-                
+# run preprocessing AT               
 n = 200000
 skip = 0
 length=0
-# min_length=0
 print('Processing Austrian speeches...')
 
 with open('raw/Nationalrat.csv', mode="r", encoding="cp1250") as fi:

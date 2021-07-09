@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue May  12 10:07:33 2020
+Measuring Rhetorical Similarity with Supervised Machine Learning
+
+Classifiers Austrian Nationalrat Speeches
 
 @author: Nicolai Berk
 """
+
+# suppress warnings
+import warnings
+warnings.filterwarnings("ignore")
+
+# Setup
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,10 +25,9 @@ import eli5
 
 df = pd.read_csv('processed/Nationalrat_cleaned.csv')
 df.party=df.party.fillna('')
-# drop 'Schriftfuehrer'
-df = df[df.party != '']
+df = df[df.party != ''] # drop 'Schriftfuehrer'
 
-## define party families beyond RR
+## define party families
 df.loc[:,'family'] = ''
 df.loc[df.party.isin(['BZÖ','FPÖ']),'family'] = 'RR'
 df.loc[df.party.isin(['NEOS','LIF']),'family'] = 'Liberal'
@@ -30,7 +37,7 @@ df.loc[df.party == 'ÖVP','family'] = 'Christian Democrat'
 print(df.family.value_counts())
 
 
-#%% prepare 
+#%% prepare ou 
 df['FPÖ'] = (df.party=='FPÖ')
 df['BZÖ'] = (df.party=='BZÖ')
 df['ÖVP'] = (df.party=='ÖVP')
@@ -79,8 +86,6 @@ df.loc[(df['date_tr']>=dt.strptime('09.11.2017', '%d.%m.%Y')) &
 
 
 #%% train classifiers (once for every legislative session, once for each RR party + VP + SP)
-dtms = {p:{s:'' for s in np.unique(df.session)} for p in outcome_pt}
-vecs = {p:{s:'' for s in np.unique(df.session)} for p in outcome_pt}
 logreg = LogisticRegression(max_iter=1000)
 
                 
@@ -91,8 +96,8 @@ for pt in outcome_pt[0:4]:
         if len(np.unique(df.loc[df['session']==s,pt]))==1:
             print('No '+pt+' speeches in session #'+str(s)+', skipping.')
             continue
-        vecs[pt][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False)
-        dtms[pt][s]=vecs[pt][s].fit_transform([t for t in df.loc[df['session']==s,'raw']])
+        vec=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False)
+        dtm=vec.fit_transform([t for t in df.loc[df['session']==s,'raw']])
         
         # choose largest subset for oversampling
         sp_list=[]
@@ -106,13 +111,13 @@ for pt in outcome_pt[0:4]:
         sm = SMOTE(random_state=42, 
              sampling_strategy=strat)
       
-        X_final, y_res_pt = sm.fit_resample(dtms[pt][s], df.loc[df['session']==s, 'party'])
+        X_final, y_res_pt = sm.fit_resample(dtm, df.loc[df['session']==s, 'party'])
         plt.hist(y_res_pt)
         y=[t==pt for t in y_res_pt]
         
         logreg.fit(X_final, y)
-        df.loc[df['session']==s, str(pt+'_pred')]=[pr[1] for pr in logreg.predict_proba(dtms[pt][s])]
-        htmlobj=eli5.show_weights(logreg, top = 31, vec = vecs[pt][s])
+        df.loc[df['session']==s, str(pt+'_pred')]=[pr[1] for pr in logreg.predict_proba(dtm)]
+        htmlobj=eli5.show_weights(logreg, top = 31, vec = vec)
         with open('vis/eli5_weights_at_clf_'+pt+str(s)+'.htm','wb') as f:
             f.write(htmlobj.data.encode("UTF-8"))
 
@@ -128,8 +133,8 @@ for s in np.unique(df.session):
         if len(np.unique(df.loc[df['session']==s,'RR']))==1:
             print('No RR speeches in session #'+str(s)+', skipping.')
             continue
-        vecs['RR'][s]=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False, ngram_range=(1,1)) # was 200 least-used terms, similar to Petersen & Spirling (used 5 in crossval bc restricted feature set)
-        dtms['RR'][s]=vecs['RR'][s].fit_transform([t for t in df.loc[df['session']==s,'raw']])
+        vec=TfidfVectorizer(max_df=.5, min_df=5, lowercase=False, ngram_range=(1,1)) # was 200 least-used terms, similar to Petersen & Spirling (used 5 in crossval bc restricted feature set)
+        dtm=vec.fit_transform([t for t in df.loc[df['session']==s,'raw']])
         
         # choose largest subset for oversampling
         sp_list=[]
@@ -143,11 +148,11 @@ for s in np.unique(df.session):
         sm = SMOTE(random_state=42, 
              sampling_strategy=strat)
       
-        X_final, y_res_pt = sm.fit_resample(dtms['RR'][s], df.loc[df['session']==s, 'family'])
+        X_final, y_res_pt = sm.fit_resample(dtm, df.loc[df['session']==s, 'family'])
         y=[t=='RR' for t in y_res_pt]
         
         logreg.fit(X_final, y)
-        df.loc[df['session']==s, 'RR_pred']=[pr[1] for pr in logreg.predict_proba(dtms['RR'][s])]
+        df.loc[df['session']==s, 'RR_pred']=[pr[1] for pr in logreg.predict_proba(dtm)]
         print('\tFinished training classifier RR session #'+str(s))
 
 #%% write into csv

@@ -1,5 +1,10 @@
-# vis AT
+###########################################################
+# MEASURING RHETORICAL SIMILARITY WITH SUPERVISED LEARNING
+# VISUALISATION OF AUSTRIAN ESTIMATES
+# Author: Nicolai Berk
+###########################################################
 
+# Setup
 library(dplyr)
 library(ggplot2)
 library(lubridate)
@@ -15,13 +20,10 @@ font_import(pattern = '.*verdana.*', prompt = F)
 loadfonts(device = "win", quiet = T)
 windowsFonts(family = 'Verdana')
 
+# import & clean data
 setwd('AT')
-
 at <- read.csv('smlse/AT_notext.csv', encoding = 'UTF-8')
-
 at$date <- as.Date(at$date,format = '%Y-%m-%d')
-
-
 at <- at[!at$party %in% c('', 'independent'),]
 partycols=c("lightblue", "blue", "green", 'yellow', 'magenta', 'black', 'red')
 
@@ -64,30 +66,7 @@ at_pt_my$ci_low_bz <- at_pt_my$mean_bz - qt(1 - (0.05 / 2), at_pt_my$n_speeches-
 at_pt_my$ci_up_bz <- at_pt_my$mean_bz + qt(1 - (0.05 / 2), at_pt_my$n_speeches-1)*at_pt_my$se_bz
 
 
-# plot
-
-## ÖVP
-vp_dta <- at_pt_my %>% 
-  filter(party %in% c('ÖVP'))
-  
-vp <- ggplot(vp_dta, aes(x = my))+ 
-  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
-  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
-  # geom_vline(xintercept = as.Date(x = c('28.2.2003'), format = '%d.%m.%Y')) +
-  geom_line(aes(y = vp_dta$mean_rr, col = 'FPÖ/BZÖ')) +
-  geom_line(aes(y = vp_dta$mean_sp, col = 'SPÖ')) +
-  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ/BZÖ', col = 'FPÖ/BZÖ')) +
-  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_sp, ymax = vp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
-  ylab('Similarity') + xlab('') +
-  ggtitle('Quarterly similarity estimates of centre-right ÖVP to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
-  theme(text = element_text(family='Verdana')) +
-  scale_color_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red')) +
-  scale_fill_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red'))
-
-ggsave('vis/AT_vp_poster.png', vp, height = 3, width = 15)
-ggsave('vis/AT_vp_presi.png', vp, height = 4.5, width = 7.5)
-ggsave('vis/AT_vp_paper.png', vp, height = 3, width = 7.5)
-
+#### Plot figure 1 ####
 
 ## FPÖ
 fp_dta <- at_pt_my %>% 
@@ -96,20 +75,43 @@ fp_dta <- at_pt_my %>%
 fp <- ggplot(fp_dta, aes(x = my))+ 
   annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
   annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
-  # geom_vline(xintercept = as.Date(x = c('28.2.2003'), format = '%d.%m.%Y')) +
-  geom_line(aes(y = fp_dta$mean_vp, col = 'ÖVP')) +
-  geom_line(aes(y = fp_dta$mean_sp, col = 'SPÖ')) +
+  geom_line(aes(y = fp_dta$mean_vp, col = 'ÖVP', lty = 'ÖVP')) +
+  geom_line(aes(y = fp_dta$mean_sp, col = 'SPÖ', lty = 'SPÖ')) +
   geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_vp, ymax = fp_dta$ci_up_vp, fill = 'ÖVP', col = 'ÖVP')) +
   geom_ribbon(alpha=0.2, aes(ymin = fp_dta$ci_low_sp, ymax = fp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
   ylab('Similarity') + xlab('') +
   ggtitle('Quarterly similarity estimates of radical-right FPÖ to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
   theme(text = element_text(family='Verdana')) +
   scale_color_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red')) +
+  scale_linetype_manual(name = '', values = c('ÖVP' = 'solid', 'SPÖ' = 'dashed')) +
   scale_fill_manual(name = '', values = c('ÖVP' = 'black', 'SPÖ' = 'red'))
 
 ggsave('vis/AT_fp_poster.png', fp, height = 3, width = 15)
 ggsave('vis/AT_fp_presi.png', fp, height = 4.5, width = 7.5)
 ggsave('vis/AT_fp_paper.png', fp, height = 3, width = 7.5)
+
+
+## ÖVP
+vp_dta <- at_pt_my %>% 
+  filter(party %in% c('ÖVP'))
+  
+vp <- ggplot(vp_dta, aes(x = my))+ 
+  annotate('rect',xmin=as.Date(x = '18.12.2017', format = '%d.%m.%Y'),xmax=as.Date(x = '28.05.2019', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') +
+  annotate('rect',xmin=as.Date(x = '04.02.2000', format = '%d.%m.%Y'),xmax=as.Date(x = '11.01.2007', format = '%d.%m.%Y'),ymin=0,ymax=0.5, alpha=0.1, fill ='red') + 
+  geom_line(aes(y = vp_dta$mean_rr, col = 'FPÖ/BZÖ', lty = 'FPÖ/BZÖ')) +
+  geom_line(aes(y = vp_dta$mean_sp, col = 'SPÖ', lty = 'SPÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_rr, ymax = vp_dta$ci_up_rr, fill = 'FPÖ/BZÖ', col = 'FPÖ/BZÖ')) +
+  geom_ribbon(alpha=0.2, aes(ymin = vp_dta$ci_low_sp, ymax = vp_dta$ci_up_sp, fill = 'SPÖ', col = 'SPÖ')) +
+  ylab('Similarity') + xlab('') +
+  ggtitle('Quarterly similarity estimates of centre-right ÖVP to...', subtitle = 'Red areas indicate ÖVP-FPÖ coalition governments') +
+  theme(text = element_text(family='Verdana')) +
+  scale_color_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red')) +
+  scale_linetype_manual(name = '', values = c('FPÖ/BZÖ' = 'solid', 'SPÖ' = 'dashed')) +
+  scale_fill_manual(name = '', values = c('FPÖ/BZÖ' = 'blue', 'SPÖ' = 'red'))
+
+ggsave('vis/AT_vp_poster.png', vp, height = 3, width = 15)
+ggsave('vis/AT_vp_presi.png', vp, height = 4.5, width = 7.5)
+ggsave('vis/AT_vp_paper.png', vp, height = 3, width = 7.5)
 
 
 

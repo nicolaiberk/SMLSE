@@ -1,13 +1,22 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Measuring Rhetorical Similarity with Supervised Machine Learning
+
+Best predictor words OEVP 2017-18
+
+@author: Nicolai Berk
+"""
+
+# Setup
 import re
 import time
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-# from imblearn.over_sampling import SMOTE
-# from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.linear_model import LinearRegression
 
-#%% load data, subset, clean
+# load data, subset, clean
 df  = pd.read_csv('smlse/AT_text.csv')
 df.date = [time.strptime(i, '%Y-%m-%d') for i in df.date]
 df = df[df.date >= time.strptime('2017-01-01', '%Y-%m-%d')]
