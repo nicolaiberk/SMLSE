@@ -11,6 +11,12 @@
 
 \usepackage[TS1,T1]{fontenc}
 
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=authoryear
+]{biblatex}
+\renewcommand*{\bibfont}{\footnotesize}
 \usepackage[normalem]{ulem}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -21,8 +27,10 @@
 
 \useunder{\uline}{\ul}{}
 
+\addbibresource{refs.bib}
 
-\title{ONLINE APPENDIX\newline Measuring Rhetorical Similarity with Supervised Machine Learning}
+
+\title{ONLINE AppENDIX\newline Measuring Rhetorical Similarity with Supervised Machine Learning}
 \author{Nicolai Berk}
 \date{\today}
 
@@ -54,52 +62,51 @@ SVM                   & count               & stemmed          & \textbf{0.45} &
 \caption{Performance of different qualifiers on German data, sorted by F1-score. $F_1 = 2*\frac{precision*recall}{precision+recall}$ }
 \end{table}
 
+\newpage
 
 
-\subsection*{Appendix B1}
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=\textwidth]{AT/vis/AT_fpvpbz_paper.png}
-    \caption{Estimates for Austria including BZÖ}
-    \label{fig:bzoe}
-\end{figure}
+\subsection*{Appendix B}
 
-\subsection*{Appendix B2}
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=\textwidth]{AT/vis/AT_fpvp_fpest_paper.png}
-    \caption{Estimates for Austria trained to detect FPÖ-speeches only.}
-    \label{fig:fponly}
-\end{figure}
-
-
-\subsection*{Appendix C}
-
-% describe dutch gov formations
-
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=\textwidth]{NL/vis/nl_vvd_cda_rr.png}
-    \caption{Estimates for the Netherlands including CDA and FvD.}
-    \label{fig:cda}
-\end{figure}
-
-The Netherlands saw only one formal coalition government between radical-right and centre-right, but an additional minority government supported by the radical-right PVV. In 2002 the \textit{Lijst Pim Fortuyn} (LPF) brought unprecedented volatility and polarisation into Dutch politics (\cite{Bischof2019a, VanderBrug2003}). Only formed about three months preceding the election, the party gained wide attraction due to its charismatic leader, a strong media presence and its distinctive anti-immigration stance (\cite{Koopmans2009}). On election day, nine days after the party leader Pim Fortuyn was assassinated, the party came in second with 17\% of the vote and formed a coalition with the christian-democrat CDA and the centre-right VVD. Having lost its founding father and as a result of its rapid success, the party was unprepared for government and was turmoiled by internal power struggles. This peaked when two LPF ministers stopped talking to each other. As a result, CDA and VVD broke the coalition only 87 days after its formation (\cite{Heinisch2003, Lucardie2007LPF}). I expect especially the LPF to become less distinctive here, as the party members decide to enter a coalition government. Similarly, CDA and VVD should become more alike the LPF in government.\par
+The Netherlands saw only one formal coalition government between radical-right and centre-right, but an additional minority government supported by the radical-right PVV. In 2002 the \textit{Lijst Pim Fortuyn} (LPF) brought unprecedented volatility and polarisation into Dutch politics (\cite{Bischof2019a, VanderBrug2003}). Only formed about three months preceding the election, the party gained wide attraction due to its charismatic leader, its distinctive anti-immigration stance, and voters' alienation with established parties on the centre-right and -left (\cite{Lucardie2007LPF, Pennings2003}). On election day, nine days after the party leader Pim Fortuyn was assassinated, the party came in second with 17\% of the vote and formed a coalition with the christian-democrat CDA and the centre-right VVD. Having lost its founding father and as a result of its rapid success, the party was unprepared for government and turmoiled by internal power struggles. This peaked when two LPF ministers stopped talking to each other. As a result, CDA and VVD broke the coalition only 87 days after its formation (\cite{DeLange2011, Heinisch2003, Lucardie2007LPF}). I expect especially the LPF to become more similar to VVD and CDA here, as the party members decide to enter a coalition government. Similarly, VVD and CDA should become more alike the LPF in government.\par
 
 The co-operation of VVD, CDA and PVV in 2010 did not result in a formal majority coalition (partly due to internal conflicts in the CDA regarding a coalition with the radical-right PVV), but a 'supported minority government'. This was the first minority government formed in the Netherlands since 1922. VVD and CDA staffed the cabinet, while the PVV only promised support on major issues. As this support was settled in a formal agreement, this government became basically a 'majority government in disguise' (\cite{Strom1990, VanHolsteyn2011}). In fact, the government cooperated very little with the opposition even compared to full majority governments - this is likely an outcome of the sorting of parties into a right-wing government and a left-wing opposition but underlines the similarity of this government to classic majority coalitions (\cite{Otjes2014}). As a result, I expect an increased similarity of the coalition partners, slightly less than in a majority coalition. \par
 
-The lower row of figure \ref{fig:govs} shows the monthly average similarity estimate in the Netherlands for PVV, LPF, and VVD\footnote{CDA and FvD were excluded to maintain readability. The full plot can be found in figure \ref{fig:cda}, appendix C.}. The LPF is rather similar to all other parties when in government, obtaining a distinctiveness estimate of only around 60\%\footnote{This value can be interpreted as the confidence with which the classifier identifies LPF speeches as such.} throughout the time governing. Once the party leaves the government, the party becomes very distinctive again. For the VVD, we can observe a slightly increased score when governing with the LPF. For the supported minority government in 2010, things are far less clear. The VVD's estimate seems to remain rather stable, with possibly a slight \textit{decrease}, while the PVV becomes much less distinctive just \textit{before} signing the support agreement. Afterwards, the PVV stays somewhat indistinctive throughout the time supporting the government at around 60\% - 70\%. After the time in government, the party's communication becomes more distinctive again.\par
+\begin{figure}[ht!]
+    \begin{minipage}{\textwidth}
+    \includegraphics[width=\linewidth]{NL/vis/NL_lpf_sim.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{\textwidth}
+    \includegraphics[width=\linewidth]{NL/vis/NL_pvv_sim.png}
+    \end{minipage}
+    \caption{Similarity of radical-right LPF (top) and PVV (bottom) towards their coalition partners across time.}
+    \label{fig:nl_RR}
+\end{figure}
 
-T-tests confirm these observations. The LPF does show a significantly decreased distinctiveness in government (t=-6.15, p$<$0.01), as does the PVV (t=-5.36, p$<$0.001). The VVD only shows slightly increased similarity to the respective radical-right party when governing with the LPF (t=3.21, p$<$0.1), but when supported by the PVV, this effect becomes virtually zero (t=0.6, p=0.55). The CDA is assigned similar SMLSEs, though more clearly reacting to the LPF (t=7.1, p$<$0.01), but neither to the PVV (t=0.96, p=0.34). Overall, the VVD is not significantly affected by governing with a radical-right party (t = 1.64, p$>$0.1), while the CDA is significantly changing its rhetoric (t=2.01, p$<$0.05).\par
+The top row of figure \ref{fig:nl_RR} shows the average similarity of the LPF towards CDA and VVD per quarter. The red-shaded area indicates the period in which the three parties governed together. A first glimpse reveals how closely the two estimates track each other. The LPF is rather similar to the two coalition partners when in government, obtaining a similarity estimate of about 30\% throughout the time governing. Once the party leaves the government, the similarity decreases again, before becoming slightly more similar again briefly before its dissolution. For the PVV (bottom row figure \ref{fig:nl_RR}), a more complicated picture emerges. As the PVV was formed by a former member of the VVD, it is not surprising that the similarity towards the liberal party - compared to the CDA - is somewhat higher after the PVV's formation. This changes preceding the government formation in 2010. At first, the similarity to the VVD steeply declines to the CDA's level (about 20\%), before the similarity to both centre-right parties increases steeply to about 35\% just before the government formation. This might reflect higher distinctiveness during electoral campaigns, before an accommodation surrounding coalition talks. During the phase in government, the similarity slowly decreases to pre-formation levels. Interestingly, the similarity towards VVD and CDA lie at similar levels (around 20\%) now, the similarity towards the CDA even seems slightly higher. \par
 
-Additionally, throughout the time in government, the LPF becomes less distinctive, while the VVD seems to become more similar. This is in line with an ideological shift in the VVD's manifesto, which took up a more anti-immigrant position (\cite{Pennings2003}), while the LPF dropped some of it's populist rhetoric (\cite{Lucardie2007LPF}). For the PVV, a shift towards the centre is visible before the formation of the minority support government - possibly signalling willingness to govern, similar to Haider's FPÖ preceding the Austrian elections in 2000.\par
+\begin{figure}[ht!]
+    \hfill
+    \begin{minipage}{\textwidth}
+    \includegraphics[width=\linewidth]{NL/vis/NL_vvd_sim.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{\textwidth}
+    \includegraphics[width=\linewidth]{NL/vis/NL_cda_sim.png}
+    \end{minipage}
+    \caption{Similarity estimates for VVD and the two major radical-right parties.}
+    \label{fig:nl_CR}
+\end{figure}
 
-\subsection*{Appendix D}
+Figure 2 displays the estimates for the liberal VVD (top) and chrstian-democrat CDA (bottom). The bars in the top indicate which parties were governing in coalition with the party at the time, as indicated by the order and colors in the legend on the top-right. So for the VVD (top graph), top (green) bars from 2002-2007, 2010-2012, and 2017-2019 indicate that the party was governing in coalition with the CDA at the time. The second row (red bar) indicates when the party was governing with the social-democrat PvdA, and the blue bars in the bottom row indicate support from radical-right parties. The graph below indicates the similarity towards the parties indicated in the legend on the bottom-right. A first observation indicates substantial variation in the similarity estimates. Until recently, the two centre-right parties show higher similarity to centrist parties compared to the radical-right. Comparing the bars in the top to the graphs, it becomes evident that higher estimates correspond to governing periods of the respective parties. The VVD displays higher similarity to the CDA (and vice versa) when in coalition government with the party, with the exception of the most recent coalition. Here the shift takes place earlier and does not reach similarity comparable to other coalitions. This might indicate the lesser room for accommodation in a four-party coalition. The similarity of the two centre-right parties towards the PvdA shows similar patterns (higher estimates in coalitions), however an additional observation can be made: preceding the governments with PvdA participation in 2007 and 2012, both the VVD and CDA show increased similarity preceding the formations, irrespective of whether the party actually became part of the coalition. For the radical-right, the pattern indicates clearly heightened similarity towards the LPF during its brief government participation, while the coalition with the PVV is only visible in the CDA estimates - the VVD accommodates the radical-right party prior to the formation, but returns to prior similarity during the coalition. Additionally, governing with the social democrats seems to decrease the similarity to the radical-right. \par
 
-% plot changes in similarity FPOE and OEVP, surrounding takeover Kurz and election 201
-%   (need to change visualisations from sim to party to sim OF party)
+T-tests confirm these observations. The monthly average similarity of the LPF towards VVD and CDA increases substantially while in government (VVD: $+9pp$\footnote{Percentage points}; CDA: $+10.6pp$), however only reaches conventional levels of significance for the CDA ($p < 0.001$). The PVV shows lower accommodation to the established parties, similarly differing in significance (VVD: $+3.1pp; p < 0.001$; CDA: $+1.4pp; p > 0.01$). CDA and VVD accommodate towards the radical-right when governing with these parties (VVD: $2.7pp; p < 0.001$; CDA: $3pp; p < 0.001$), however the effect is much stronger when in coalition with the LPF (VVD: $8.3pp; p < 0.001$; CDA: $7.5pp; p < 0.001$) than when supported by the PVV (VVD: $1.5pp; p< 0.001$; CDA: $2.1pp; p< 0.001$). Similarity towards each other is similarly affected when governing with each other (VVD: $+7.4pp$; CDA $5.8pp$; both $p < 0.001$), as well as the similarity towards the PvdA when governing with this party (VVD: $+3.3pp$, CDA: $+8.8pp$). Interestingly, governing with the social democrats also affects the similarity towards the radical-right negatively (VVD: $-4.7pp$; CDA: $-2.4pp$; both $p<0.001$). This is especially striking as the effect for the VVD is \textit{twice} the size compared to governing with a radical-right party. \par
 
-\subsection*{Appendix E}
+The main expectation is confirmed by these findings: coalition parties accommodate towards each other, validating the measurement. However, additional interesting variation can be observed: a lot of variation is produced in the context of government formations, where parties accomodate likely coalition partners. Similarly, while the centre-right showed higher similarity to the social-democrats compared to the radical right, this no longer seems to be the case. This is especially relevant as the PvdA seemed to function as a safeguard against radical-right accommodation when governing with the centre-right, substantially decreasing the centre-rights similarity to the radical-right.
+
+\newpage
+
+\subsection*{Appendix C}
 \begin{table}[ht!]
 \begin{tabular}{|l|l|l|l|}
 \hline
@@ -124,6 +131,9 @@ Saoedi      & 8.6          & moskee         & 5.5          \\ \hline
 \label{tab:wilders}
 \end{table}
 
+\newpage
+
+\printbibliography
 
 
 
