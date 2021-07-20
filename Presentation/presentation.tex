@@ -67,7 +67,7 @@ citestyle=authoryear
 
 \section{Method}
 
-\begin{frame}{Introducing SMLSE}
+\begin{frame}{A supervised ML measure of group similarity}
     \begin{enumerate}
         \item Pre-process texts
         \item Select well-performing classifier
@@ -159,7 +159,7 @@ What distinguishes the radical right in \textbf{the Netherlands}?
 
 \begin{figure}
         \centering
-        \includegraphics[width = \textwidth]{NL/vis}
+        \includegraphics[width = \textwidth]{NL/vis/NL_vvd_sim.png}
 \end{figure}
 \end{frame}
 
@@ -182,81 +182,54 @@ What distinguishes the radical right in \textbf{the Netherlands}?
     \framebreak
     \begin{figure}
         \centering
-        \includegraphics[width = \textwidth]{DE_speakers.png}
+        \includegraphics[width = \textwidth]{DE/vis/DE_speakers_PA.png}
         \caption{Speakers in the current German Bundestag.}
     \end{figure}
     \begin{figure}
-        \centering
-        \includegraphics[width = \textwidth]{nl_Wilders_comp.png}
-        \caption{Placement of Wilders in the VVD in 2004.}
-    \end{figure}
-    \begin{figure}
-        \centering
-        % replace plot with plot restricted to time before split, maybe with several time stamps
-        \includegraphics[width = \textwidth]{Wilders_Rutte.png}
-        \caption{Development of Wilders and Rutte over time.}
+        \includegraphics[width = \textwidth]{NL/vis/Wilders_both_r.png}
     \end{figure}
 \end{frame}
-
-\begin{frame}{Additional Validity}
-    \centering\Large Do parties become more similar when they govern together?
-\end{frame}
-
 
 
 \section{Comparative performance}
-\begin{frame}{Measures}
-    Cosine Similarity
-    \begin{itemize}
-        \item Cosine of arch between to document count vectors
-        \item 0 = no similarity
-        \item 1 = identical word use
-    \end{itemize}\medskip
-    WORDFISH
-    \begin{itemize}
-        \item \cite{Slapin2008}
-        \item Uses assumptions about distribution of word counts to place entities on main underlying dimension
-        \item scores indicate the relative position on the main dimension structuring differences in word use
-    \end{itemize}
-\end{frame}
 
-\begin{frame}[allowframebreaks]{Cosine and Jaccard similarity}
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.6\textwidth]{paper_corr.png}
-    \end{figure}
-    \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth]{paper_pts.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[allowframebreaks]{WORDFISH}
+\begin{frame}{Comparable Measures}
 \begin{figure}
     \centering
-    \includegraphics[width = \textwidth]{de_wordfish_pt_dens.png}
-\end{figure}
-\begin{figure}
-    \centering
-    \includegraphics[width = \textwidth]{de_wordfish_speakers.png}
+    \includegraphics[width = \textwidth]{DE/vis/similarity_pts.jpg}
 \end{figure}
 \end{frame}
 
 
-\section{Conclusion}
+\section{Review}
 \begin{frame}{Summary}
 \begin{itemize}
-    \item SMLSE gives precise estimates about rhetorical similarity
+    \item SML estimate gives precise measure of rhetorical similarity
     \item the meaning of these differences can be assessed in detail
-    \item SMLSE outperforms other methods like WORDFISH and cosine similarity
+    \item outperforms other methods like WORDFISH and cosine similarity
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Extended Applications}
+\begin{frame}{Reviewer comments}
     \begin{itemize}
-        \item Have mainstream parties historically been similar to the present day radical right?
-        \item LDA: on which issues are parties similar to RR? Which distinguish RR?
-        \item Regression: what explains parties RR-ness?
+        \item Scaling speeches on 'partyness' $\rightarrow$ not a novel method
+        \item Doesn't build on \cite{Peterson2018} (scaling, not aggregate accuracy)
+        \item Cosine similarity not a measure of similarity (document to corpus)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Possible routes forward}
+    Substantive piece
+    \begin{itemize}
+        \item Testing classical theories of RR accommodation
+        \item Improving predictors of coalition formation
+        \item Historical: Showing accommodation of NSDAP by conservatives (Levitsky \& Ziblatt)
+    \end{itemize}
+    
+    Methods contribution
+    \begin{itemize}
+        \item Arguing for extended use of SML for better content validity
+        \item Showing a possible application
     \end{itemize}
 \end{frame}
 
@@ -271,10 +244,4 @@ What distinguishes the radical right in \textbf{the Netherlands}?
      \printbibliography
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Appendix}
-    \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth]{DE_past_notrend.png}
-    \end{figure}
-\end{frame}
 \end{document}
