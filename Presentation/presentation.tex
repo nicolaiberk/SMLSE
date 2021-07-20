@@ -1,0 +1,280 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=authoryear
+]{biblatex}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\addbibresource{refs.bib}
+
+\setbeamertemplate{navigation symbols}{}
+\usetheme{Frankfurt}
+\useinnertheme{circles}
+\definecolor{blue}{rgb}{0,0.15,0.6}
+\setbeamercolor{headline}{fg=blue}
+
+\title{Measuring Rhetorical Similarity with Machine Learning}
+
+\author{Nicolai Berk}
+\institute{University of Amsterdam}
+
+\date{July 9, 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{frame}{Relevance}
+    Group similarity of interest for many areas in political science:
+    \begin{itemize}
+        \item Representation
+        \begin{itemize}
+            \item Do certain (e.g. female/working class/PoC) MPs communicate differently?
+            \item How similar is legislation to interest group's demands?
+            \item Do MP's become more similar over time?
+            \item Are directly elected MPs communicating differently?
+        \end{itemize}
+        \item Government formation
+        \begin{itemize}
+            \item Which parties communicate more similar and are more likely to form a coalition?
+        \end{itemize}
+        \item Party Competition
+        \begin{itemize}
+            \item Did parties become more or less similar to each other?
+            \item Did parties fill political opportunity spaces opened by other parties?
+            \item Which MPs are likely to leave their party?
+        \end{itemize}
+        \item Polarisation, ...
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Current Methods}
+    \begin{itemize}
+        \item Simple similarity measures: cosine, jaccard \newline
+        $\rightarrow$ no weighting of terms
+        \item Scaling methods: WORDSCORE, WORDFISH (\cite{Laver2003, Slapin2008}) \newline
+        $\rightarrow$ no similarity measures, cannot measure similarity of a document to a collection of texts
+        \item \cite{Peterson2018}: Machine learning accuracy to measure polarisation
+        $\rightarrow$ no estimates for single texts
+        \item[$\rightarrow$]\textbf{Use ML to scale texts on 'groupness'}
+    \end{itemize}
+\end{frame}
+
+\section{Method}
+
+\begin{frame}{Introducing SMLSE}
+    \begin{enumerate}
+        \item Pre-process texts
+        \item Select well-performing classifier
+        \item Balance data, using SMOTE (\cite{Chawla2002})
+        \item BoW-classifier trained on full set
+        \item Predicted probabilities assigned to all texts
+        \item Train one classifier/time-period to 'control' for changing language
+    \end{enumerate}
+\end{frame}
+
+
+\section{Validity}
+\begin{frame}{Application}
+\begin{itemize}
+    \item How similar are speakers and parties to the radical right?
+    \item Parliamentary speeches from lower Chambers in AT, DE, NL (\cite{Rauh2020})
+    \item estimates of similarity to radical right party obtained using Python's \texttt{scikit-learn}
+    \item Logistic regression on unstemmed text, tfidf-weighted
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Validation}
+    Three approaches
+    \begin{itemize}
+        \item Content of RR language
+        \item Government formations with RR participation (AT \& NL)
+        \item Speaker estimates of party exits (DE \& NL)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Best predictor Words}
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{0.25\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{Presentation/bestPred_at.png}
+         \caption{Austria}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.235\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{Presentation/bestPred_de.png}
+         \caption{Germany}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.235\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{Presentation/bestPred_nl.png}
+         \caption{Netherlands}
+     \end{subfigure}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]{Best predictor Words}
+What distinguishes the radical right in \textbf{Austria}?
+\begin{itemize}
+    \item talking about \textbf{opposition}
+    \item talking about Vienna (SD-governed)
+    \item talking about health reform (RR-led ministry)
+    \item less likely to address house as colleagues
+    \item less likely to use gender-inclusive language
+\end{itemize}
+
+\framebreak
+What distinguishes the radical right in \textbf{Germany}?
+\begin{itemize}
+    \item talking about \textbf{government}
+    \item talking about Germany
+    \item less likely to address house as colleagues
+    \item less likely to use gender-inclusive language
+    \item less causal language
+\end{itemize}
+\framebreak
+What distinguishes the radical right in \textbf{the Netherlands}?
+\begin{itemize}
+    \item strong immigration focus
+    \item more informal language
+    \item less nuancing language
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Radical-right government participation}
+\begin{figure}
+    \centering
+    \includegraphics[width = \textwidth]{AT/vis/AT_fp_paper.png}
+\end{figure}
+
+\begin{figure}
+        \centering
+        \includegraphics[width = \textwidth]{NL/vis}
+\end{figure}
+\end{frame}
+
+
+
+
+\begin{frame}[allowframebreaks]{Speaker distribution}
+    Leaving the AfD
+    \begin{itemize}
+        \item One day after the national election in 2017, Frauke Petry and Mario Mieruch left the party
+        \item They became independent members of the Bundestag
+    \end{itemize}\medskip
+
+    Leaving the VVD
+    \begin{itemize}
+        \item Geert Wilders left the VVD in September 2004
+        \item this followed a rift with his party over the immigration issue
+        \item as well as a series of escalations (position paper in July, vote on Turkey end of August)
+    \end{itemize}
+    \framebreak
+    \begin{figure}
+        \centering
+        \includegraphics[width = \textwidth]{DE_speakers.png}
+        \caption{Speakers in the current German Bundestag.}
+    \end{figure}
+    \begin{figure}
+        \centering
+        \includegraphics[width = \textwidth]{nl_Wilders_comp.png}
+        \caption{Placement of Wilders in the VVD in 2004.}
+    \end{figure}
+    \begin{figure}
+        \centering
+        % replace plot with plot restricted to time before split, maybe with several time stamps
+        \includegraphics[width = \textwidth]{Wilders_Rutte.png}
+        \caption{Development of Wilders and Rutte over time.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Additional Validity}
+    \centering\Large Do parties become more similar when they govern together?
+\end{frame}
+
+
+
+\section{Comparative performance}
+\begin{frame}{Measures}
+    Cosine Similarity
+    \begin{itemize}
+        \item Cosine of arch between to document count vectors
+        \item 0 = no similarity
+        \item 1 = identical word use
+    \end{itemize}\medskip
+    WORDFISH
+    \begin{itemize}
+        \item \cite{Slapin2008}
+        \item Uses assumptions about distribution of word counts to place entities on main underlying dimension
+        \item scores indicate the relative position on the main dimension structuring differences in word use
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Cosine and Jaccard similarity}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{paper_corr.png}
+    \end{figure}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{paper_pts.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{WORDFISH}
+\begin{figure}
+    \centering
+    \includegraphics[width = \textwidth]{de_wordfish_pt_dens.png}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width = \textwidth]{de_wordfish_speakers.png}
+\end{figure}
+\end{frame}
+
+
+\section{Conclusion}
+\begin{frame}{Summary}
+\begin{itemize}
+    \item SMLSE gives precise estimates about rhetorical similarity
+    \item the meaning of these differences can be assessed in detail
+    \item SMLSE outperforms other methods like WORDFISH and cosine similarity
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Extended Applications}
+    \begin{itemize}
+        \item Have mainstream parties historically been similar to the present day radical right?
+        \item LDA: on which issues are parties similar to RR? Which distinguish RR?
+        \item Regression: what explains parties RR-ness?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Thank you!}
+    \huge \centering
+    Questions?
+\end{frame}
+
+
+
+\begin{frame}[allowframebreaks]{Resources}
+     \printbibliography
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Appendix}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{DE_past_notrend.png}
+    \end{figure}
+\end{frame}
+\end{document}
