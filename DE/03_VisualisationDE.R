@@ -75,20 +75,24 @@ de_sp$labels[de_sp$speaker %in% c('Lars Herrmann', 'Verena Hartmann')] <- ''
 # write to csv for website
 write.csv(file = 'smlse/DE_speakers.csv', x =  de_sp)
 
+
+partycols=c("lightblue", "lightgrey", "#FF6565", "gold", "lightgreen", "firebrick", 'blue')
+
 speaker_plot <-
   ggplot(de_sp[de_sp$n_words>100,],aes(x=party, y=mean_w, fill=party, label = labels, col = labelcol)) + 
   geom_dotplot(binwidth=0.015, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F, stroke = 2.5)+
   geom_text(aes(label=labels), col='black', position = 'identity', size = 5, vjust=-1, family = 'Verdana') +
   scale_fill_manual(values=partycols) +
-  theme_minimal() +
   scale_color_manual(values=c('white', 'black')) +
+  theme_minimal() +
   xlab('')+
-  ylab('Similarity to AfD')+
+  ylab('Similarity to AfD') +
   theme(axis.text.x = element_text(color = "grey20", size = 12, angle = 0, hjust = .5, vjust = .5, face = "plain"),
          axis.text.y = element_text(color = "grey20", size = 12, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
          axis.title.x = element_text(color = "grey20", size = 12, angle = 0, hjust = .5, vjust = 0, face = "plain"),
          axis.title.y = element_text(color = "grey20", size = 12, angle = 90, hjust = .5, vjust = .5, face = "plain"),
-        text = element_text(family='Verdana'))
+        text = element_text(family='Verdana'),
+        plot.background = element_rect(fill = "#bfbfbf"))
 
 ggsave('vis/DE_speakers.png', speaker_plot, height = 7, width = 13)
 ggsave('vis/DE_speakers_presi.png', speaker_plot, height = 6, width = 10)
@@ -96,9 +100,6 @@ ggsave('vis/DE_speakers_presi.png', speaker_plot, height = 6, width = 10)
 
 
 # larger and only last name labels, darker colors for PA
-
-partycols=c("lightblue", "lightgrey", "#FF6565", "gold", "lightgreen", "firebrick", 'blue')
-
 de_sp$labels <- word(de_sp$labels, -1)
 
 speaker_plot_PA <-
