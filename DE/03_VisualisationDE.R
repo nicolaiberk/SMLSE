@@ -80,7 +80,7 @@ partycols=c("lightblue", "lightgrey", "#FF6565", "gold", "lightgreen", "firebric
 
 speaker_plot <-
   ggplot(de_sp[de_sp$n_words>100,],aes(x=party, y=mean_w, fill=party, label = labels, col = labelcol)) + 
-  geom_dotplot(binwidth=0.015, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F, stroke = 2.5)+
+  geom_dotplot(binwidth=0.015, method='histodot', drop = T, stackratio = .7, binaxis = 'y', stackdir = 'center', show.legend = F, stroke = 2)+
   geom_text(aes(label=labels), col='black', position = 'identity', size = 5, vjust=-1, family = 'Verdana') +
   scale_fill_manual(values=partycols) +
   scale_color_manual(values=c('white', 'black')) +
