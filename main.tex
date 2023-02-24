@@ -7,6 +7,8 @@
 \usepackage[table]{xcolor}
 \usepackage{rotating}
 \usepackage{adjustbox}
+\usepackage{caption}
+\usepackage{subcaption}
 
 
 \usepackage[TS1,T1]{fontenc}
@@ -120,6 +122,32 @@ After preparing the similarity estimates as described, I assess their validity u
 Radical-right parties are usually defined based on their distinctive policy positions. These parties are nationalist and hold especially conservative cultural as well as authoritarian positions. Additionally, they often communicate with populist rhetoric, including anti-elitism and people-centrism (\cite{Mudde2007}). Table \ref{tab:bpws} shows the words most positively (red) and negatively (turquoise) correlated with radical-right authorship. These words are the best predictors to distinguish the radical-right parties (FPÖ; AfD; PVV/FvD) in the most recent legislative period in the data (ending in Dec 2018 in DE \& AT, Jul 2019 in NL), out of all words in the model. \par
 
 Considerable differences exist in the rhetoric distinguishing radical-right parties in these three countries. The AfD in Germany is foremost differentiated by its aversion to gender-inclusive language, which the party criticises as ‘gender-madness’\footnote{See \url{https://afdkompakt.de/tag/genderwahn/}}. It also displays heightened reference to itself, Germany (in line with its nationalist ideology), and the government (being the largest opposition party), compared to other parties. Its members address the parliament with ‘ladies and gentlemen’, not the male and female forms of ‘colleagues’. The use of causal adverbs ('therefore', 'hence')\footnote{This is particularly interesting, as such causal language seems to correlate with a number of psychological states, most importantly analytic thinking  (\cite{Pennebaker2003, Pennebaker2011}).} and reference to ‘democrats’ is also less found in AfD-authored speeches. \par
+
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{}
+         \caption{$y=x$}
+         \label{fig:y equals x}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{}
+         \caption{$y=3\sin x$}
+         \label{fig:three sin x}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{}
+         \caption{$y=5/x$}
+         \label{fig:five over x}
+     \end{subfigure}
+        \caption{Three simple graphs}
+        \label{fig:three graphs}
+\end{figure}
 
 \begin{table}[ht!]
 \centering
