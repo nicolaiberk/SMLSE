@@ -42,25 +42,27 @@ citestyle=authoryear
 
 \maketitle
 
-
 \begin{abstract}
-Recent advances in the application of supervised learning have shown how the method can be employed to measure polarization by assessing classifiers' accuracy. Building on these contributions, I propose a reconceptualisation to enable extended utilization of this approach. Focusing on measurement error as a measure of rhetorical similarity, I validate supervised learning for the measurement of accommodation to radical right parties through established parties and politicians in Austria, Germany, and the Netherlands. Results indicate that the method produces valid estimates of parties' and speakers' rhetorical similarities to respective radical-right parties and outperforms existing similarity measures and scaling methods. I discuss possible further applications and limitations.\par \medskip
+I develop a fine-grained measure of party accommodation exploiting systematic measurement error in supervised machine learning algorithms. I validate the measure for the measurement of accommodation to radical right parties through established parties and politicians in Austria, Germany, and the Netherlands. Results indicate that the method produces valid estimates of parties' and speakers' rhetorical similarities to respective radical-right parties and outperforms existing similarity measures and scaling methods. I discuss possible further applications and limitations.\par \medskip
 
 
-\textbf{Keywords:} party accommodation, measurement, parliamentary speech, text analysis, machine learning, party competition, radical-right.
+\textbf{Keywords:} party accommodation, measurement error, parliamentary speech, text analysis, NLP, machine learning, party competition.
 \end{abstract}
 
 \begin{center}
-Word count: ca. 7,466
+Word count: 7,466 ??
 \end{center}
 
 \section{Introduction}
 \label{sec:Intro}
-Political scientists are often interested in the rhetorical similarity of different sets of texts. For example, scholars of representation might be interested whether certain groups communicate distinctively in parliament (\cite{Pitkin1967}) or whether legislation is similar to demands voiced by interest groups (\cite{Gilens2014a}). Students of government formation and termination want to know which parties communicate most similar and are hence most likely to govern with each other (\cite{Gamson1961}), and when these coalitions are likely to break down (\cite{Lupia1995CoalitionTermination}). Public opinion scholars evaluate how the media or political groups left their mark on the current public discourse (\cite{Zaller1992}). Scientists interested in party competition might assess historical similarities between parties to judge whether one party filled a place abandoned by another (\cite{Kitschelt1986}), or whether one party moved towards another (\cite{Downs1957}). Knowing how similar MPs communicate allows to judge whether certain MPs are likely to leave their party (\cite{Hirschman1970}).\par
 
-Despite the centrality of rhetorical similarities to political science research, existing approaches to measure it are limited. Scaling methods such as wordscore (\cite{Laver2003}) and wordfish (\cite{Slapin2008}) place labels\footnote{I define 'labels' as meta-information about documents (such as authorship), which allows to group said documents into corpora. A corpus (plural: corpora) is a group of documents.} in a one- (wordfish) or multi-dimensional space (wordscore), based on their word usage. These measures were designed for measuring ideological positions, not similarities, as they cannot precisely estimate the similarity of a given document \textit{with} a corpus. As such, they measure a latent dimension to be interpreted by the researcher, not a stable, pre-defined construct (\cite{Goet2019}). Simpler similarity measures, such as cosine similarity, are designed to assess literal identity of single documents, however perform badly for meaningful assessments (\cite{Prasetya2018}). To my knowledge, no specified method to estimate the rhetorical similarity of groups exists at the time of writing.\par
+Party accommodation is considered a core strategy in party competition (\cite{Meguid2005}). However, most existing research on the causes and consequences of party accommodation exclusively builds on measures using comparative manifesto data (\cite{krause2023does, Spoon2020, Lehmann2022CMP}). This severely limits the granularity of the data in analysis, limiting research to the investigation of long-term phenomena. To address this methodological gap, I propose the use of systematic measurement error in supervised learning as an indicator of the similarity of parties' and politicians' communication. 
 
-To address this methodological gap, I propose the use of supervised learning to measure the similarity of a given document with a specified corpus. This approach builds on an existing method to assess the similarity between groups using classifier accuracy (\cite{Peterson2018}), but moves the focus to predicted probabilities as a substantive similarity measure. This enables to provide a precise similarity estimate for each document, based on its word use. In the next section, I briefly discuss the relevance of rhetorical similarity and the capability of existing methods to capture it. Afterwards, I explain how supervised learning can be used to estimate rhetorical similarity step by step. Using parliamentary speeches from Austria, Germany, and the Netherlands, I then provide evidence indicating that the indicator is able to distinguish radical-right parties in line with theoretical expectations and produce valid estimates of similarity to the radical-right for established parties and speakers. The last section compares these estimates with wordfish and cosine similarity estimates and shows that the supervised method returns more meaningful, precise and efficient results.\par
+% this discussion of drawbacks of cmp and experimental data needs to be extended
+
+I test this approach using parliamentary speeches from Austria, Germany, and the Netherlands. In several case studies, I provide evidence of content and construct validity of the measure. First, I show that the features driving this difference pick up relevant characteristics of radical-right parties. Second, I show that the measure behaves in line with expectations surrounding coalition formations and breakups. Lastly, I show that the measure picks up changes in speakers' rhetoric preceding their exit from a party.
+
+The approach provides valid estimates of party accommodation and outperforms other available measures of textual similarity. The method can not only be used by party competition researchers to gain a more fine-grained understanding of party accommodation, but also those interested in gender differences, coalition formation and breakup, and many other topics where textual similarity of different corpora is of interest. \par
 
 
 \section{Estimating rhetorical similarity}
@@ -128,96 +130,90 @@ Considerable differences exist in the rhetoric distinguishing radical-right part
      \begin{subfigure}[b]{0.3\textwidth}
          \centering
          \includegraphics[width=\textwidth]{DE/vis/DE_weights.png}
-         \caption{$y=x$}
-         \label{fig:y equals x}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.3\textwidth}
          \centering
          \includegraphics[width=\textwidth]{AT/vis/AT_weights.png}
-         \caption{$y=3\sin x$}
-         \label{fig:three sin x}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.3\textwidth}
          \centering
          \includegraphics[width=\textwidth]{NL/vis/NL_weights.png}
-         \caption{$y=5/x$}
-         \label{fig:five over x}
      \end{subfigure}
         \caption{Three simple graphs}
         \label{fig:three graphs}
 \end{figure}
 
-\begin{table}[ht!]
-\centering
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Germany}                         & \textbf{Austria}            & \textbf{The Netherlands} \\ \hline
-\rowcolor[HTML]{c41200} 
-citizen/s {[}m{]}                        & honoured                    & immigration              \\ \hline
-\rowcolor[HTML]{c41200} 
-Merkel                                   & SPÖ                         & and so on                \\ \hline
-\rowcolor[HTML]{c41200} 
-german                                   & once                        & Islam                    \\ \hline
-\rowcolor[HTML]{c41200} 
-AfD                                      & patients  {[}m{]}           & PVV                      \\ \hline
-\rowcolor[HTML]{c41200} 
-Germany                                  & colleague {[}f{]}           & Islamic                  \\ \hline
-\rowcolor[HTML]{c41200} 
-old-parties                              & just {[}temporal{]}/precisely & Brussels                 \\ \hline
-\rowcolor[HTML]{c41200} 
-here                                     & Hohes {[}as in 'Hohes Haus'{]} & possible                 \\ \hline
-\rowcolor[HTML]{c41200} 
-government                               & years                       & immigration policy       \\ \hline
-\rowcolor[HTML]{c41200} 
-much                                     & population                  & illegal immigrants       \\ \hline
-\rowcolor[HTML]{c41200} 
-thanks                                   & Social Democracy            & hate-speech paragraph    \\ \hline
-\rowcolor[HTML]{c41200} 
-ladies                                   & appropriate                 & sign                     \\ \hline
-\rowcolor[HTML]{c41200} 
-thank you                                & Kern (SPÖ)                  & animal police            \\ \hline
-\rowcolor[HTML]{c41200} 
-gentlemen                                & Pilz                        & house-keeping            \\ \hline
-\rowcolor[HTML]{c41200} 
-employees                                & sector                      & gigantic                 \\ \hline
-\rowcolor[HTML]{c41200} 
-\cellcolor[HTML]{00BFC4}soldiers {[}f{]} & also                        & discount                 \\ \hline
-\rowcolor[HTML]{c41200} 
-\cellcolor[HTML]{00BFC4}state secretary  & federal minister {[}m{]}            & bene                     \\ \hline
-\rowcolor[HTML]{c41200} 
-\cellcolor[HTML]{00BFC4}warmly           & colleague {[}m{]}           & status holders           \\ \hline
-\rowcolor[HTML]{c41200} 
-\cellcolor[HTML]{00BFC4}important        & perhaps                     & heaven’s sake            \\ \hline
-\rowcolor[HTML]{00BFC4} 
-coalition agreement                      & \cellcolor[HTML]{c41200}committee & Kops {(}PVV{)}           \\ \hline
-\rowcolor[HTML]{00BFC4} 
-last                                     & colleagues {[}m{]}          & consideration            \\ \hline
-\rowcolor[HTML]{00BFC4} 
-therefore                                & Kurz                        & At the same time         \\ \hline
-\rowcolor[HTML]{00BFC4} 
-the left                                 & citizens {[}f{]}            & agreements               \\ \hline
-\rowcolor[HTML]{00BFC4} 
-colleagues                               & dear                        & diligent                 \\ \hline
-\rowcolor[HTML]{00BFC4} 
-hence                                    & motion                      & advised against          \\ \hline
-\rowcolor[HTML]{00BFC4} 
-need                                     & humans                      & mister                   \\ \hline
-\rowcolor[HTML]{00BFC4} 
-citizens {[}f{]}                         & minister {[}f{]}            & look                     \\ \hline
-\rowcolor[HTML]{00BFC4} 
-democrats                                & FPÖ                         & Agema {(}PVV{)}          \\ \hline
-\rowcolor[HTML]{00BFC4} 
-say                                      & federal minister {[}f{]}                      & bright                   \\ \hline
-\rowcolor[HTML]{00BFC4} 
-think                                    & colleagues {[}f{]}          & predominant              \\ \hline
-\rowcolor[HTML]{00BFC4} 
-colleagues {[}f{]}                       & ÖVP                         & Baudet {(}FvD{)}         \\ \hline
-\end{tabular}
-\caption{Thirty best predictor words increasing (red/dark/top) and decreasing (turquoise/light/bottom) likelihood of radical-right authorship for Germany, Austria, and the Netherlands. Squared brackets indicate gender, round brackets note the party affiliation of specific names.}
-\label{tab:bpws}
-\end{table}
+% \begin{table}[ht!]
+% \centering
+% \begin{tabular}{|l|l|l|}
+% \hline
+% \textbf{Germany}                         & \textbf{Austria}            & \textbf{The Netherlands} \\ \hline
+% \rowcolor[HTML]{c41200} 
+% citizen/s {[}m{]}                        & honoured                    & immigration              \\ \hline
+% \rowcolor[HTML]{c41200} 
+% Merkel                                   & SPÖ                         & and so on                \\ \hline
+% \rowcolor[HTML]{c41200} 
+% german                                   & once                        & Islam                    \\ \hline
+% \rowcolor[HTML]{c41200} 
+% AfD                                      & patients  {[}m{]}           & PVV                      \\ \hline
+% \rowcolor[HTML]{c41200} 
+% Germany                                  & colleague {[}f{]}           & Islamic                  \\ \hline
+% \rowcolor[HTML]{c41200} 
+% old-parties                              & just {[}temporal{]}/precisely & Brussels                 \\ \hline
+% \rowcolor[HTML]{c41200} 
+% here                                     & Hohes {[}as in 'Hohes Haus'{]} & possible                 \\ \hline
+% \rowcolor[HTML]{c41200} 
+% government                               & years                       & immigration policy       \\ \hline
+% \rowcolor[HTML]{c41200} 
+% much                                     & population                  & illegal immigrants       \\ \hline
+% \rowcolor[HTML]{c41200} 
+% thanks                                   & Social Democracy            & hate-speech paragraph    \\ \hline
+% \rowcolor[HTML]{c41200} 
+% ladies                                   & appropriate                 & sign                     \\ \hline
+% \rowcolor[HTML]{c41200} 
+% thank you                                & Kern (SPÖ)                  & animal police            \\ \hline
+% \rowcolor[HTML]{c41200} 
+% gentlemen                                & Pilz                        & house-keeping            \\ \hline
+% \rowcolor[HTML]{c41200} 
+% employees                                & sector                      & gigantic                 \\ \hline
+% \rowcolor[HTML]{c41200} 
+% \cellcolor[HTML]{00BFC4}soldiers {[}f{]} & also                        & discount                 \\ \hline
+% \rowcolor[HTML]{c41200} 
+% \cellcolor[HTML]{00BFC4}state secretary  & federal minister {[}m{]}            & bene                     \\ \hline
+% \rowcolor[HTML]{c41200} 
+% \cellcolor[HTML]{00BFC4}warmly           & colleague {[}m{]}           & status holders           \\ \hline
+% \rowcolor[HTML]{c41200} 
+% \cellcolor[HTML]{00BFC4}important        & perhaps                     & heaven’s sake            \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% coalition agreement                      & \cellcolor[HTML]{c41200}committee & Kops {(}PVV{)}           \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% last                                     & colleagues {[}m{]}          & consideration            \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% therefore                                & Kurz                        & At the same time         \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% the left                                 & citizens {[}f{]}            & agreements               \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% colleagues                               & dear                        & diligent                 \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% hence                                    & motion                      & advised against          \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% need                                     & humans                      & mister                   \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% citizens {[}f{]}                         & minister {[}f{]}            & look                     \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% democrats                                & FPÖ                         & Agema {(}PVV{)}          \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% say                                      & federal minister {[}f{]}                      & bright                   \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% think                                    & colleagues {[}f{]}          & predominant              \\ \hline
+% \rowcolor[HTML]{00BFC4} 
+% colleagues {[}f{]}                       & ÖVP                         & Baudet {(}FvD{)}         \\ \hline
+% \end{tabular}
+% \caption{Thirty best predictor words increasing (red/dark/top) and decreasing (turquoise/light/bottom) likelihood of radical-right authorship for Germany, Austria, and the Netherlands. Squared brackets indicate gender, round brackets note the party affiliation of specific names.}
+% \label{tab:bpws}
+% \end{table}
 
 As the Austrian FPÖ was in government at the time, it makes sense that it is distinguished from other parties by reference to the opposition (the social democrats of the SPÖ are the main opposition party) rather than the government, including the reference to Vienna, a stronghold of the social democrats much criticised by the radical- and centre-right. It also prefers to address the parliament as ‘ladies’ and ‘gentlemen’ rather than ‘colleagues’. One of the major projects of the FPÖ-led health ministry was a reform of the health sector, which explains the reference to 'patients'. Referring to members of the government in female form decreases the likelihood of radical-right authorship (similar to the German AfD), as does reference to ‘humans’ and addressing the house ‘warmly’.\par
 
